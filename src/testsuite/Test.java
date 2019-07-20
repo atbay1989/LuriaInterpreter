@@ -9,8 +9,8 @@ import ast.expression.Variable;
 import ast.statement.BlockStatement;
 import ast.statement.PrintStatement;
 import ast.statement.Statement;
-import evaluator.Evaluation;
 import evaluator.Evaluator;
+import visitor.PrintVisitor;
 
 public class Test {
 
@@ -36,21 +36,26 @@ public class Test {
 		AssignmentExpression ae3 = new AssignmentExpression(z, abe2);
 		
 		// print(z)
-		PrintStatement ps = new PrintStatement(z);
-		 
+		PrintStatement ps1 = new PrintStatement(z);
+		
+		// print(x)
+		PrintStatement ps2 = new PrintStatement(x);
+
 		statements.add(ae1);	
 		statements.add(ae2);		
 		statements.add(ae3);		
-		statements.add(ps);		
+		statements.add(ps1);	
+		statements.add(ps2);		
+
 
 		BlockStatement b = new BlockStatement(statements);
 		
-		Evaluation e = new Evaluation();
+		Evaluator e = new Evaluator();
+		PrintVisitor v = new PrintVisitor();
 		e.interpret(b); 
 		e.environment.getTable();		
-		
-		Evaluator ev = new Evaluator();
-		ev.visit(b);
+		v.visit(b, null);
+
 	}
 	
 }

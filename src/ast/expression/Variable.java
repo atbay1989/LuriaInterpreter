@@ -1,7 +1,6 @@
 package ast.expression;
 
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class Variable extends Expression {
 	
@@ -38,22 +37,15 @@ public class Variable extends Expression {
 	public void setIndex(int index) {
 		this.index = index;
 	}
-	
-	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public String toString() {
 		return symbol;
+	}
+
+	@Override
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
 	}
 	
 }

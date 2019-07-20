@@ -1,7 +1,6 @@
 package ast.expression;
 
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class IntegerLiteral extends Expression {
 	
@@ -16,22 +15,13 @@ public class IntegerLiteral extends Expression {
 	}
 
 	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public String toString() {
 		return "" + value;
 	}
-	
-	
-	
+
+	@Override
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
+	}
+
 }

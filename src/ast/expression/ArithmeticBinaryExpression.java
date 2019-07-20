@@ -1,7 +1,6 @@
 package ast.expression;
 
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class ArithmeticBinaryExpression extends BinaryExpression {
 	
@@ -30,20 +29,16 @@ public class ArithmeticBinaryExpression extends BinaryExpression {
 	}
 	
 	// enum nested class END
-	
-	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		return visitor.visit(this);
-	}
-
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		visitor.visit(this);		
-	}
 
 	@Override
 	public String toString() {
-		return "ArithmeticBinaryExpression " + super.getLeft().toString() + " + " + super.getExpression().toString();
+		//return "ArithmeticBinaryExpression " + super.getLeft().toString() + " + " + super.getExpression().toString();
+		return "ArithmeticBinaryExpression";
+	}
+
+	@Override
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
 	}
 
 }

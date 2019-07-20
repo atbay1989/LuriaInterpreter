@@ -2,8 +2,7 @@ package ast.statement;
 
 import java.util.Collection;
 
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class BlockStatement extends Statement {
 
@@ -13,18 +12,18 @@ public class BlockStatement extends Statement {
 		this.statements = statements.toArray(new Statement[statements.size()]);
 	}
 
-	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		return visitor.visit(this);
-	}
-
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		visitor.visit(this);		
-	}
-
 	public Statement[] getStatements() {
 		return statements;
+	}
+
+	@Override
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
+	}
+
+	@Override
+	public String toString() {
+		return "BlockStatement";
 	}
 	
 }
