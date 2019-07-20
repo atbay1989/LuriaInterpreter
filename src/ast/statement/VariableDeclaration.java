@@ -6,28 +6,18 @@ import visitor.Visitor;
 
 public class VariableDeclaration extends Statement {
 
-	//private Signifier signifier;
-	private String signifier;
+	private Signifier signifier;
 	private Expression initialisation;
 	
-	//public VariableDeclaration(Signifier signifier, Expression initialisation) {
-	//	this.signifier = signifier;
-	//	this.initialisation = initialisation;
-	//}
-	
-	public VariableDeclaration(String signifier, Expression initialisation) {
+	public VariableDeclaration(Signifier signifier, Expression initialisation) {
 		this.signifier = signifier;
 		this.initialisation = initialisation;
 	}
 
-	//public Signifier getSignifier() {
-	//	return signifier;
-	//}
-	
-	public String getSignifier() {
+	public Signifier getSignifier() {
 		return signifier;
 	}
-
+	
 	public Expression getInitialisation() {
 		return initialisation;
 	}

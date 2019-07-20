@@ -15,16 +15,15 @@ public class Evaluator {
 	public Environment environment;
 	
 	public Evaluator() {
-		environment = new Environment();
+		environment = new Environment(this);
 	}
 
-	
 	// interpret
 	public void interpret(Statement statement) {		
 		// BlockStatement
 		if (statement instanceof BlockStatement) {
 			for (Statement s : ((BlockStatement) statement).getStatements()) {
-				System.out.println(s.toString());
+				//System.out.println(s.toString());
 				interpretStatement(s);
 			}
 			

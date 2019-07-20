@@ -3,11 +3,19 @@ package environment;
 import java.util.ArrayList;
 
 import ast.expression.Variable;
+import evaluator.Evaluator;
 
 public class Environment {
 
-	public ArrayList<Variable> table = new ArrayList<Variable>();
+	private Evaluator evaluator;
+	public ArrayList<Variable> table;
 	
+	// constructor
+	public Environment(Evaluator evaluator) {
+		this.evaluator = evaluator;
+		this.table = new ArrayList<Variable>();
+	}
+
 	public void store(Variable v) {
 		table.add(v.getIndex(), v);
 	}
