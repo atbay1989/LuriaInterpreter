@@ -1,8 +1,7 @@
 package ast.expression;
 
 import ast.Signifier;
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class VariableLiteral extends Expression {
 
@@ -26,13 +25,8 @@ public class VariableLiteral extends Expression {
 	}
 
 	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		return visitor.visit(this);
-	}
-	
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		visitor.visit(this);		
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
 	}
 	
 }

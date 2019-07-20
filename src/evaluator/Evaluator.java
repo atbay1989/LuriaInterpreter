@@ -1,86 +1,102 @@
 package evaluator;
 
-import ast.Program;
 import ast.expression.ArithmeticBinaryExpression;
 import ast.expression.AssignmentExpression;
+import ast.expression.Expression;
 import ast.expression.IntegerLiteral;
 import ast.expression.Variable;
-import ast.expression.VariableLiteral;
 import ast.statement.BlockStatement;
 import ast.statement.PrintStatement;
 import ast.statement.Statement;
-import ast.statement.VariableDeclaration;
 import environment.Environment;
-import visitor.Visitable;
-import visitor.VoidVisitor;
 
-public class Evaluator implements VoidVisitor {
-
-	protected Environment environment;
+public class Evaluator {
 	
-	public void Interpret(Statement s) {
-		
-		if (s instanceof AssignmentExpression) {
+	public Environment environment;
+	
+	public Evaluator() {
+		environment = new Environment();
+	}
+
+	
+	// interpret
+	public void interpret(Statement statement) {		
+		// BlockStatement
+		if (statement instanceof BlockStatement) {
+			for (Statement s : ((BlockStatement) statement).getStatements()) {
+				System.out.println(s.toString());
+				interpretStatement(s);
+			}
 			
+		// Statement
+		} else {
+			interpretStatement(statement);
 		}
 	}
-	
-	@Override
-	public void visit(Visitable e) {}
 
-	@Override
-	public void visit(Program e) {}
-
-	@Override
-	public void visit(BlockStatement e) {
-		for (Statement statement : e.getStatements()) {
-			statement.accept(this);
+	// interpretStatement
+	private void interpretStatement(Statement statement) {
+		// AssignmentExpression
+		if (statement instanceof AssignmentExpression) {				
+			Variable v = (Variable) ((AssignmentExpression) statement).getLeft();
+			assign(v, ((AssignmentExpression) statement).getExpression());
 		}	
+		
+		// PrintStatement
+		if (statement instanceof PrintStatement) {
+			System.out.println(environment.lookup((Variable) ((PrintStatement) statement).getExpression()).getValue());
+		}
 	}
 
-	@Override
-	public void visit(PrintStatement e) {
-		System.out.println(e.toString());
-		e.getExpression().accept(this);
-		System.out.println(e.getExpression().toString());	
-	}
+	// interpretExpression
+	private int interpretExpression(Expression expression) {		
+		// ArithmeticBinaryExpression (i.e. ADDITION)
+		// Note: Type might allow to switch between ADDITION, SUBTRACTION, etc.
+		if (expression instanceof ArithmeticBinaryExpression) {
+			int result = evaluate(((ArithmeticBinaryExpression) expression).getLeft()) +
+					evaluate(((ArithmeticBinaryExpression) expression).getExpression());
+			System.out.println("SUM " + result);
+			return result;
+		}
+		
+		// IntegerLiteral
+		if (expression instanceof IntegerLiteral) {
+			return evaluate(expression); 
+		}
+		
+		// Variable
+		if (expression instanceof Variable) {
+			return evaluate(expression);
+		}
+		
+		// Default
+		return 0;
+		
+	} 
 
-	@Override
-	public void visit(VariableDeclaration e) {}
+	// evaluate
+	private int evaluate(Expression expression) {
 
-	@Override
-	public void visit(ArithmeticBinaryExpression e) {
-		System.out.println(e.toString());
-
-		e.getLeft().accept(this);
-		e.getExpression().accept(this);		
-	}
-
-	@Override
-	public void visit(AssignmentExpression e) {
-		System.out.println(e.toString());
-		e.getLeft().accept(this);
-		e.getExpression().accept(this);	
-	}
-
-	@Override
-	public void visit(IntegerLiteral e) {
-		System.out.println("VISITED");
-		System.out.println(e.toString());
-		e.accept(this);
-		System.out.println("IntegerLiteral");
-		System.out.print(e.toString());
+		// IntegerLiteral
+		if (expression instanceof IntegerLiteral) {
+			return ((IntegerLiteral) expression).getValue();
+		}
+		
+		// Variable
+		if (expression instanceof Variable) {
+			return environment.lookup((Variable) expression).getValue();
+		}
+		
+		// Default
+		return 0;
 		
 	}
-
-	@Override
-	public void visit(VariableLiteral e) {}
-
-	@Override
-	public void visit(Variable e) {
-		System.out.println(e.getSymbol());
-		e.accept(this);
-		
+	
+	// assign
+	public void assign(Variable v, Expression e) {
+		int result = interpretExpression(e);
+		System.out.println("ASSIGN " + result + " TO " + v.getSymbol());
+		environment.store(new Variable(v.getSymbol(), result, v.getIndex()));
 	}
-
+	
 }

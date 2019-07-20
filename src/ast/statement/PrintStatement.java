@@ -1,8 +1,7 @@
 package ast.statement;
 
 import ast.expression.Expression;
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class PrintStatement extends Statement {
 
@@ -17,18 +16,13 @@ public class PrintStatement extends Statement {
 	}
 
 	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		return visitor.visit(this);
-	}
-	
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		visitor.visit(this);		
+	public String toString() {
+		return "PrintStatement[" + expression + "]";
 	}
 
 	@Override
-	public String toString() {
-		return "PrintStatement[" + expression + "]";
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
 	}
 
 }

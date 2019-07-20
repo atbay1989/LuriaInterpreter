@@ -1,7 +1,6 @@
 package ast.expression;
 
-import visitor.ReturnVisitor;
-import visitor.VoidVisitor;
+import visitor.Visitor;
 
 public class AssignmentExpression extends Expression {
 	
@@ -11,16 +10,6 @@ public class AssignmentExpression extends Expression {
 	public AssignmentExpression(Expression left, Expression expression) {
 		this.left = left;
 		this.expression = expression;
-	}
-
-	@Override
-	public <E> E accept(ReturnVisitor<E> visitor) {
-		return visitor.visit(this);	
-	}
-
-	@Override
-	public <E> void accept(VoidVisitor<E> visitor) {
-		visitor.visit(this);		
 	}
 
 	public Expression getLeft() {
@@ -33,7 +22,13 @@ public class AssignmentExpression extends Expression {
 
 	@Override
 	public String toString() {
-		return "AssignmentExpression[" + left.toString() + " := " + expression.toString() + "]";
+		//return "AssignmentExpression[" + left.toString() + " := " + expression.toString() + "]";
+		return "AssignmentExpression";
+	}
+
+	@Override
+	public Object accept(Visitor visitor) {
+		return visitor.visit(this, null);
 	}
 		
 }
