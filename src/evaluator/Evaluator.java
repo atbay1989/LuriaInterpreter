@@ -78,7 +78,7 @@ public class Evaluator {
 					System.out.println(left + " % " + right + " = " + result);
 					return result;
 				default:
-					System.out.println("ERROR > Operation not recognised.");
+					System.out.println("ERROR -> Operation not recognised.");
 			}
 		}
 		
