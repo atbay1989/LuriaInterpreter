@@ -3,7 +3,7 @@ package syntacticanalysis;
 public class Token {
 	
 	final TokenType type;
-	final String lexeme;
+	public final String lexeme;
 	final Object literal;
 	final int location;
 	
