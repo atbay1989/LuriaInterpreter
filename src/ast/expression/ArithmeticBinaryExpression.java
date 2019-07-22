@@ -4,36 +4,30 @@ import visitor.Visitor;
 
 public class ArithmeticBinaryExpression extends BinaryExpression {
 	
-	//private Operation operation;
+	private Operation operation;
 	
-/*	public ArithmeticBinaryExpression(Operation operation, Expression left, Expression expression) {
+	public ArithmeticBinaryExpression(Operation o, Expression left, Expression expression) {
 		super(left, expression);
-		this.operation = operation;
-	}*/
-	
-	public ArithmeticBinaryExpression(Expression left, Expression expression) {
-		super(left, expression);
+		this.operation = o;
+		
 	}
 	
 	// enum nested class START
 	
 	public static enum Operation {
-		ADDITION("+"), SUBTRACTION("-");
-		
-		private String symbol;
-		
-		Operation(String symbol) {
-			this.symbol = symbol;
-		}
+		ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION, MODULO;
 		
 	}
 	
 	// enum nested class END
 
+	public Operation getOperation() {
+		return operation;
+	}
+	
 	@Override
 	public String toString() {
-		//return "ArithmeticBinaryExpression " + super.getLeft().toString() + " + " + super.getExpression().toString();
-		return "ArithmeticBinaryExpression";
+		return this.operation.toString();
 	}
 
 	@Override

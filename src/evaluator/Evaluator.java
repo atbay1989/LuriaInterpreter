@@ -15,6 +15,7 @@ public class Evaluator {
 	public Environment environment;
 	
 	public Evaluator() {
+		System.out.println("---EVALUATION---");
 		environment = new Environment(this);
 	}
 
@@ -23,7 +24,6 @@ public class Evaluator {
 		// BlockStatement
 		if (statement instanceof BlockStatement) {
 			for (Statement s : ((BlockStatement) statement).getStatements()) {
-				//System.out.println(s.toString());
 				interpretStatement(s);
 			}
 			
@@ -43,19 +43,43 @@ public class Evaluator {
 		
 		// PrintStatement
 		if (statement instanceof PrintStatement) {
+			System.out.println("---PRINT---");
 			System.out.println(environment.lookup((Variable) ((PrintStatement) statement).getExpression()).getValue());
 		}
 	}
 
 	// interpretExpression
 	private int interpretExpression(Expression expression) {		
-		// ArithmeticBinaryExpression (i.e. ADDITION)
-		// Note: Type might allow to switch between ADDITION, SUBTRACTION, etc.
+		
+		// ArithmeticBinaryExpression
 		if (expression instanceof ArithmeticBinaryExpression) {
-			int result = evaluate(((ArithmeticBinaryExpression) expression).getLeft()) +
-					evaluate(((ArithmeticBinaryExpression) expression).getExpression());
-			System.out.println("SUM " + result);
-			return result;
+			int left = evaluate(((ArithmeticBinaryExpression) expression).getLeft());
+			int right = evaluate(((ArithmeticBinaryExpression) expression).getExpression());
+			int result;
+			switch (((ArithmeticBinaryExpression) expression).getOperation()) {			
+				case ADDITION:
+					result = left + right;
+					System.out.println(left + " + " + right + " = " + result);
+					return result;
+				case SUBTRACTION:
+					result = left - right;
+					System.out.println(left + " - " + right + " = " + result);
+					return result;
+				case MULTIPLICATION:
+					result = left * right;
+					System.out.println(left + " * " + right + " = " + result);
+					return result;
+				case DIVISION:
+					result = left / right;
+					System.out.println(left + " / " + right + " = " + result);
+					return result;
+				case MODULO:
+					result = left % right;
+					System.out.println(left + " % " + right + " = " + result);
+					return result;
+				default:
+					System.out.println("ERROR > Operation not recognised.");
+			}
 		}
 		
 		// IntegerLiteral
@@ -75,26 +99,24 @@ public class Evaluator {
 
 	// evaluate
 	private int evaluate(Expression expression) {
-
 		// IntegerLiteral
 		if (expression instanceof IntegerLiteral) {
 			return ((IntegerLiteral) expression).getValue();
 		}
-		
+
 		// Variable
 		if (expression instanceof Variable) {
 			return environment.lookup((Variable) expression).getValue();
 		}
 		
 		// Default
-		return 0;
-		
+		return 0;		
 	}
 	
 	// assign
 	public void assign(Variable v, Expression e) {
 		int result = interpretExpression(e);
-		System.out.println("ASSIGN " + result + " TO " + v.getSymbol());
+		System.out.println(v.getSymbol() + " := " + result);
 		environment.store(new Variable(v.getSymbol(), result, v.getIndex()));
 	}
 	

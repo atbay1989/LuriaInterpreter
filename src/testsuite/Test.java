@@ -3,6 +3,7 @@ package testsuite;
 import java.util.ArrayList;
 
 import ast.expression.ArithmeticBinaryExpression;
+import ast.expression.ArithmeticBinaryExpression.Operation;
 import ast.expression.AssignmentExpression;
 import ast.expression.IntegerLiteral;
 import ast.expression.Variable;
@@ -27,12 +28,12 @@ public class Test {
 		// y := (x + 3)
 		Variable y = new Variable("y", 0, 1);
 		IntegerLiteral il2 = new IntegerLiteral(3);
-		ArithmeticBinaryExpression abe1 = new ArithmeticBinaryExpression(x, il2);
+		ArithmeticBinaryExpression abe1 = new ArithmeticBinaryExpression(Operation.ADDITION, x, il2);
 		AssignmentExpression ae2 = new AssignmentExpression(y, abe1);
 		
-		// z := (x + y)
+		// z := (x * y)
 		Variable z = new Variable("z", 0, 2);
-		ArithmeticBinaryExpression abe2 = new ArithmeticBinaryExpression(x, y);
+		ArithmeticBinaryExpression abe2 = new ArithmeticBinaryExpression(Operation.MULTIPLICATION, x, y);
 		AssignmentExpression ae3 = new AssignmentExpression(z, abe2);
 		
 		// print(z)
@@ -47,7 +48,6 @@ public class Test {
 		statements.add(ps1);	
 		statements.add(ps2);		
 
-
 		BlockStatement b = new BlockStatement(statements);
 		
 		Evaluator e = new Evaluator();
@@ -55,7 +55,6 @@ public class Test {
 		e.interpret(b); 
 		e.environment.getTable();		
 		v.visit(b, null);
-
 	}
 	
 }

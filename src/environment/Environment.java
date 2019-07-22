@@ -25,6 +25,7 @@ public class Environment {
 	}
 	 
 	public void getTable() {
+		System.out.println("---TABLE CONTENTS---");
 		for (Variable v : table) {
 			System.out.println(v.getSymbol() + " " + v.getValue());
 		}

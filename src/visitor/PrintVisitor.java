@@ -27,6 +27,7 @@ public class PrintVisitor implements Visitor {
 
 	@Override
 	public Object visit(BlockStatement s, Object o) {
+		System.out.println("---TREE---");
 		System.out.println(s);
 		for (Statement x : s.getStatements()) {
 			//this.visit(x, o);
