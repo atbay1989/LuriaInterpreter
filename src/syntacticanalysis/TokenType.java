@@ -15,8 +15,14 @@ public enum TokenType {
 	ASTERISK,
 	
 	// one or many character token
+	EXCLAMATION,
+	EXCLAMATION_EQUAL,
 	EQUAL,
 	EQUAL_EQUAL,
+	GREATER,
+	GREATER_EQUAL,
+	LESS,
+	LESS_EQUAL,
 	
 	// literal
 	SIGNIFIER,
@@ -28,7 +34,18 @@ public enum TokenType {
 	CLASS,
 	ELSE,
 	FALSE,
+	FUNCTION,
+	FOR,
+	IF,
+	NIL,
+	OR,
+	PRINT,
+	RETURN,
+	SUPER,
+	THIS,
 	TRUE,
+	VARIABLE,
+	WHILE,
 	
 	// end of file
 	EOF
