@@ -2,6 +2,7 @@ package syntacticanalysis;
 
 import static syntacticanalysis.TokenType.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import luria.Luria;
@@ -18,19 +19,46 @@ public class Parser {
 	}
 
 	// entry method parse()
-	public Expression parse() {
+/*	public Expression parse() {
 		try {
 			return expression();
 		} catch (ParserError error) {
 			return null;
 		}
+	}*/
+	public List<Statement> parse() {
+		List<Statement> statements = new ArrayList<>();
+		while (!end()) {
+			statements.add(statement());
+		}
+		return statements;
 	}
 
 	// expression()
 	private Expression expression() {
 		return equality();
 	}
-
+	
+	// statement()
+	private Statement statement() {
+		if (match(PRINT)) return printStatement();
+		return expressionStatement();
+	}
+	
+	// printStatement()
+	private Statement printStatement() {
+		Expression value = expression();
+		consume(SEMI_COLON, "Error: Expect ; after value.");
+		return new Statement.Print(value);
+	}
+	
+	// expressionStatement() {
+	private Statement expressionStatement() {
+		Expression e = expression();
+		consume(SEMI_COLON, "Error: Expect ; after expression.");
+		return new Statement.ExpressionStatement(e);
+	}
+	
 	// match()
 	private boolean match(TokenType... types) {
 		for (TokenType t : types) {
