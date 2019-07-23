@@ -8,8 +8,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import syntacticanalysis.Expression;
+import syntacticanalysis.Parser;
 import syntacticanalysis.Scanner;
 import syntacticanalysis.Token;
+import syntacticanalysis.TokenType;
+import visitor.PrettyPrinter;
 
 public class Luria {
 	
@@ -49,23 +53,37 @@ public class Luria {
 	// run
 	public static void run(String source) {
 		Scanner scanner = new Scanner(source);
-		List<Token> tokens = scanner.scanTokens();
+		List<Token> tokens = scanner.scanTokens();		
+	    Parser parser = new Parser(tokens);                    
+	    Expression expression = parser.parse();
+                
+	    if (error) return;                                  
+
+	    System.out.println(new PrettyPrinter().print(expression));
 		
-		if (error) System.exit(667);
+/*		if (error) System.exit(667);
 		
 		// print tokens
 		for (Token token : tokens) {
 			System.out.println(token);
-		}
+		}*/
 	}
 	
 	public static void error(int line, String message) {
 		report(line, "", message);
 	}
-	
+
 	private static void report(int line, String location, String message) {
 		System.err.println("[line " + line + "] Error" + location + ": " + message);
-		error = true;	
+		error = true;
 	}
-	
+
+	public static void error(Token token, String message) {
+		if (token.type == TokenType.EOF) {
+			report(token.location, " at EOF", message);
+		} else {
+			report(token.location, " at '" + token.lexeme + "'", message);
+		}
+	}
+
 }
