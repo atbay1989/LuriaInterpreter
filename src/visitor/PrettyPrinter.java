@@ -10,7 +10,7 @@ import syntacticanalysis.TokenType;
 
 public class PrettyPrinter implements Expression.Visitor<String> {
 	
-	String print(Expression e) {                                            
+	public String print(Expression e) {                                            
 		    return e.accept(this);                                          
 		  }     
 
@@ -21,7 +21,6 @@ public class PrettyPrinter implements Expression.Visitor<String> {
 
 	@Override
 	public String visitGroupingExpression(Grouping e) {
-		// TODO Auto-generated method stub
 		return parenthesise("group", e.expression);
 	}
 

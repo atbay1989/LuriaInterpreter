@@ -6,12 +6,10 @@ public abstract class Expression {
 
 	public interface Visitor<T> {
 		T visitBinaryExpression(Binary expression);
-
 		T visitGroupingExpression(Grouping expression);
-
 		T visitLiteralExpression(Literal expression);
-
 		T visitUnaryExpression(Unary expression);
+		
 	}
 
 	public static class Binary extends Expression {

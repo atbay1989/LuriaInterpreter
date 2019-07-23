@@ -2,10 +2,10 @@ package syntacticanalysis;
 
 public class Token {
 	
-	final TokenType type;
+	public final TokenType type;
 	public final String lexeme;
 	final Object literal;
-	final int location;
+	public final int location;
 	
 	public Token(TokenType type, String lexeme, Object literal, int location) {
 		this.type = type;

@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
 
-public class ASTClassGeneratorTool {
+public class ASTTool {
 
 	public static void main(String[] args) throws IOException {                                                        
 	      String outputDirectory = "C:\\Users\\james\\Desktop\\EclipseSpace\\Fluorescent\\Luria\\src\\syntacticanalysis";                                    
