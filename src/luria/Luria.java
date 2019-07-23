@@ -8,16 +8,22 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+import evaluator.Interpreter;
 import syntacticanalysis.Expression;
 import syntacticanalysis.Parser;
+import syntacticanalysis.RuntimeError;
 import syntacticanalysis.Scanner;
+import syntacticanalysis.Statement;
 import syntacticanalysis.Token;
 import syntacticanalysis.TokenType;
 import visitor.PrettyPrinter;
 
 public class Luria {
 	
+	private static final Interpreter interpreter = new Interpreter();
+	
 	static boolean error = false;
+	static boolean runtimeError = false;
 	
 	// main
 	public static void main(String[] args) throws IOException {
@@ -34,6 +40,9 @@ public class Luria {
 	// read and execute file from file path
 	public static void runFile(String path) throws IOException {
 		byte[] bytes = Files.readAllBytes(Paths.get(path));
+		
+		if (error) System.exit(667);
+		if (runtimeError) System.exit(668);
 		run(new String(bytes, Charset.defaultCharset()));
 	}
 
@@ -55,11 +64,14 @@ public class Luria {
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();		
 	    Parser parser = new Parser(tokens);                    
-	    Expression expression = parser.parse();
+	    //Expression expression = parser.parse();
+	    List<Statement> statements = parser.parse();
                 
 	    if (error) return;                                  
 
-	    System.out.println(new PrettyPrinter().print(expression));
+	    //interpreter.interpret(expression);
+	    interpreter.interpret(statements);
+	    //System.out.println(new PrettyPrinter().print(expression));
 		
 /*		if (error) System.exit(667);
 		
@@ -84,6 +96,11 @@ public class Luria {
 		} else {
 			report(token.location, " at '" + token.lexeme + "'", message);
 		}
+	}
+
+	public static void runtimeError(RuntimeError error) {
+		System.err.println(error.getMessage() + "\n[line " + error.token.location + "]");
+		runtimeError = true;
 	}
 
 }
