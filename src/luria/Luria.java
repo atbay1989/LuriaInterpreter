@@ -9,19 +9,16 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import evaluator.Interpreter;
-import syntacticanalysis.Expression;
 import syntacticanalysis.Parser;
 import syntacticanalysis.RuntimeError;
 import syntacticanalysis.Scanner;
 import syntacticanalysis.Statement;
 import syntacticanalysis.Token;
 import syntacticanalysis.TokenType;
-import visitor.PrettyPrinter;
 
 public class Luria {
-	
+	// fields
 	private static final Interpreter interpreter = new Interpreter();
-	
 	static boolean error = false;
 	static boolean runtimeError = false;
 	
@@ -43,6 +40,7 @@ public class Luria {
 		
 		if (error) System.exit(667);
 		if (runtimeError) System.exit(668);
+		
 		run(new String(bytes, Charset.defaultCharset()));
 	}
 
@@ -51,7 +49,6 @@ public class Luria {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
 		
-		// ctrl+c to exit loop
 		while (true) {
 			System.out.print("> ");
 			run(reader.readLine());
@@ -65,16 +62,12 @@ public class Luria {
 		List<Token> tokens = scanner.scanTokens();		
 	    Parser parser = new Parser(tokens);                    
 	    //Expression expression = parser.parse();
-	    List<Statement> statements = parser.parse();
-                
-	    if (error) return;                                  
-
+	    List<Statement> statements = parser.parse();            
+	    if (error) return;
 	    //interpreter.interpret(expression);
 	    interpreter.interpret(statements);
-	    //System.out.println(new PrettyPrinter().print(expression));
-		
-/*		if (error) System.exit(667);
-		
+	    //System.out.println(new PrettyPrinter().print(expression));	
+/*		if (error) System.exit(667);		
 		// print tokens
 		for (Token token : tokens) {
 			System.out.println(token);

@@ -208,14 +208,14 @@ public class Scanner {
 	
 	private void string() {
 		while (peek() != '"' && !end()) {
-			if (peek() == '\n') {
-				location++;
-				advance();
-			}
+			if (peek() == '\n') location++;
+			advance();
+			
 		}
 		// missing "
 		if (end()) {
 			Luria.error(location, "Error: string not closed.");
+			return;
 		}
 		// " found
 		advance();
