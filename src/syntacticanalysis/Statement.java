@@ -13,6 +13,8 @@ public abstract class Statement {
 		T visitBlockStatement(Block statement);
 		T visitClassStatement(Class statement);
 		T visitFunctionStatement(Function statement);
+		T visitIfStatement(If statement);
+		T visitWhileStatement(While statement);
 		
 	}
 
@@ -92,6 +94,42 @@ public abstract class Statement {
 			return visitor.visitPrintStatement(this);
 		}
 		
+	}
+	
+	public static class If extends Statement {
+		// fields
+		public final Expression condition;
+		public final Statement thenBranch;
+		public final Statement elseBranch;
+
+		If(Expression condition, Statement thenBranch, Statement elseBranch) {
+			this.condition = condition;
+			this.thenBranch = thenBranch;
+			this.elseBranch = elseBranch;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitIfStatement(this);
+		}
+
+	}
+
+	public static class While extends Statement {
+		// fields
+		public final Expression condition;
+		public final Statement body;
+
+		public While(Expression condition, Statement body) {
+			this.condition = condition;
+			this.body = body;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitWhileStatement(this);
+		}
+
 	}
 	
 	public static class Variable extends Statement {

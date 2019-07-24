@@ -16,9 +16,9 @@ public class Scanner {
 	private int start = 0;
 	private int current = 0;
 	private int location = 1;
-	
+
 	private static final Map<String, TokenType> reservedWords;
-	
+
 	static {
 		reservedWords = new HashMap<>();
 		reservedWords.put("and", AND);
@@ -55,7 +55,7 @@ public class Scanner {
 	private void scanToken() {
 		char c = advance();
 		switch (c) {
-		
+
 		// one character token
 		case '(':
 			addToken(LEFT_PARENTHESIS);
@@ -87,7 +87,7 @@ public class Scanner {
 		case '*':
 			addToken(ASTERISK);
 			break;
-			
+
 		// one or many character token
 		case '!':
 			addToken(match('=') ? EXCLAMATION_EQUAL : EXCLAMATION);
@@ -105,32 +105,32 @@ public class Scanner {
 			if (match('/')) {
 				while (peek() != '\n' && !end()) {
 					advance();
-				} 
-			} else {
-					addToken(FORWARD_SLASH);
 				}
+			} else {
+				addToken(FORWARD_SLASH);
+			}
 			break;
-			
+
 		// whitespace
 		case ' ':
 		case '\r':
 		case '\t':
 			break;
-		
+
 		// new line
 		case '\n':
 			location++;
 			break;
-		
+
 		// string
 		case '"':
 			string();
 			break;
-			
+
 		// default number, identifier, else error
 		default:
 			if (isDigit(c)) {
-				number();				
+				number();
 			} else if (isAlpha(c)) {
 				identifier();
 			} else {
@@ -146,71 +146,71 @@ public class Scanner {
 		// is reserved word?
 		String text = source.substring(start, current);
 		TokenType type = reservedWords.get(text);
-		if (type == null) type = SIGNIFIER;
+		if (type == null)
+			type = SIGNIFIER;
 		addToken(type);
 	}
-	
+
 	private boolean isAlpha(char c) {
-		return (c >= 'a' && c <= 'z') ||
-			   (c >= 'A' && c <= 'Z') ||
-			    c == '_';
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 	}
-	
+
 	public boolean isAlphanumeric(char c) {
 		return isAlpha(c) || isDigit(c);
 	}
-	
+
 	private boolean match(char expected) {
 		if (end()) {
 			return false;
 		}
 		if (source.charAt(current) != expected) {
 			return false;
-		}		
+		}
 		current++;
 		return true;
 	}
-	
+
 	private char peek() {
 		if (end()) {
 			return '\0';
 		}
-		
+
 		return source.charAt(current);
 	}
-	
+
 	private char peekNext() {
 		if (current + 1 >= source.length()) {
 			return '\0';
 		}
 		return source.charAt(current + 1);
 	}
-	
+
 	private boolean isDigit(char c) {
 		return c >= '0' && c <= '9';
 	}
-	
+
 	private void number() {
 		while (isDigit(peek())) {
 			advance();
 		}
-		
+
 		if (peek() == '.' && isDigit(peekNext())) {
 			advance();
-			
+
 			while (isDigit(peek())) {
 				advance();
 			}
 		}
-		
+
 		addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
 	}
-	
+
 	private void string() {
 		while (peek() != '"' && !end()) {
-			if (peek() == '\n') location++;
+			if (peek() == '\n')
+				location++;
 			advance();
-			
+
 		}
 		// missing "
 		if (end()) {
@@ -223,7 +223,7 @@ public class Scanner {
 		String value = source.substring(start + 1, current - 1);
 		addToken(STRING, value);
 	}
-	
+
 	private boolean end() {
 		return current >= source.length();
 	}
