@@ -55,12 +55,37 @@ public class Parser {
 
 	// statement()
 	private Statement statement() {
+		if (match(IF)) return ifStatement(); 
+		if (match(WHILE)) return whileStatement();
 		if (match(PRINT)) return printStatement();		
 		if (match(LEFT_BRACE)) return new Statement.Block(block());
 		return expressionStatement();
 
 	}
 	
+	private Statement whileStatement() {
+	    consume(LEFT_PARENTHESIS, "Error: Expect ( after 'while'.");   
+	    Expression condition = expression();                      
+	    consume(RIGHT_PARENTHESIS, "Error: expect ) after condition.");
+	    Statement body = statement();
+
+	    return new Statement.While(condition, body);
+	}
+
+	private Statement ifStatement() {
+		consume(LEFT_PARENTHESIS, "Error: Expect ( after if.");
+		Expression condition = expression();
+		consume(RIGHT_PARENTHESIS, "Error: Expect ) after if condition.");
+
+		Statement thenBranch = statement();
+		Statement elseBranch = null;
+		if (match(ELSE)) {
+			elseBranch = statement();
+		}
+
+		return new Statement.If(condition, thenBranch, elseBranch);
+	}
+
 	// printStatement()
 	private Statement printStatement() {
 		Expression value = expression();
@@ -101,8 +126,8 @@ public class Parser {
 	
 	// assignment()
 	private Expression assignment() {
-		Expression e = equality();
-		
+		//Expression e = equality();
+	    Expression e = or();  
 		if (match(EQUAL)) {
 			Token result = previous();
 			Expression value = assignment();
@@ -117,6 +142,29 @@ public class Parser {
 		return e;
 	}
 	
+	private Expression or() {
+	    Expression e = and();
+	    while (match(OR)) {                              
+	      Token operator = previous();                   
+	      Expression right = and();                            
+	      e = new Expression.Logical(e, operator, right);
+	    }                                                
+
+	    return e;  
+	}
+
+	private Expression and() {
+	    Expression e = equality();
+
+	    while (match(AND)) {                             
+	      Token operator = previous();                   
+	      Expression right = equality();                       
+	      e = new Expression.Logical(e, operator, right);
+	    }                                                
+
+	    return e; 
+	}
+
 	// match()
 	private boolean match(TokenType... types) {
 		for (TokenType t : types) {

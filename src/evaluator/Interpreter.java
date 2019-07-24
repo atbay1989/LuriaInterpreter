@@ -5,6 +5,7 @@ import syntacticanalysis.Expression.Assignment;
 import syntacticanalysis.Expression.Binary;
 import syntacticanalysis.Expression.Grouping;
 import syntacticanalysis.Expression.Literal;
+import syntacticanalysis.Expression.Logical;
 import syntacticanalysis.Expression.Unary;
 import syntacticanalysis.Expression.VariableExpression;
 import syntacticanalysis.RuntimeError;
@@ -13,8 +14,10 @@ import syntacticanalysis.Statement;
 import syntacticanalysis.Statement.Block;
 import syntacticanalysis.Statement.Class;
 import syntacticanalysis.Statement.Function;
+import syntacticanalysis.Statement.If;
 import syntacticanalysis.Statement.Print;
 import syntacticanalysis.Statement.Variable;
+import syntacticanalysis.Statement.While;
 
 import static syntacticanalysis.TokenType.*;
 
@@ -221,5 +224,36 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
+	@Override
+	public Void visitIfStatement(If statement) {
+		if (truthy(evaluate(statement.condition))) {
+			execute(statement.thenBranch);
+		} else if (statement.elseBranch != null) {
+			execute(statement.elseBranch);
+		}
+		return null;
+	}
+
+	@Override
+	public Object visitLogicalExpression(Logical expression) {
+	    Object left = evaluate(expression.left);
+
+	    if (expression.operator.type == OR) {        
+	      if (truthy(left)) return left;               
+	    } else {                                         
+	      if (!truthy(left)) return left;              
+	    }                                                
+
+	    return evaluate(expression.right);
+	}
+
+	@Override
+	public Void visitWhileStatement(While statement) {
+		while (truthy(evaluate(statement.condition))) {
+			execute(statement.body);
+		}
+		return null;
+	}
+
 }

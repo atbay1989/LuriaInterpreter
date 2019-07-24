@@ -1,5 +1,6 @@
 package luria;
 
+// Java imports
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -8,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
+// Luria imports
 import evaluator.Interpreter;
 import syntacticanalysis.Parser;
 import syntacticanalysis.RuntimeError;
@@ -22,25 +24,27 @@ public class Luria {
 	static boolean error = false;
 	static boolean runtimeError = false;
 	
+	// test path
+	static String PATH = "src\\testsuite\\test.txt";
+	
 	// main
 	public static void main(String[] args) throws IOException {
-		if (args.length > 1) {
+		runFile(PATH);
+/*		if (args.length > 1) {
 			System.out.println("Usage: Luria [script]");
 			System.exit(666);
 		} else if (args.length == 1) {
 			runFile(args[0]);
 		} else {
 			runPrompt();
-		}
+		}*/
 	}
 	
 	// read and execute file from file path
-	public static void runFile(String path) throws IOException {
-		byte[] bytes = Files.readAllBytes(Paths.get(path));
-		
+	public static void runFile(String PATH) throws IOException {
+		byte[] bytes = Files.readAllBytes(Paths.get(PATH));		
 		if (error) System.exit(667);
 		if (runtimeError) System.exit(668);
-		
 		run(new String(bytes, Charset.defaultCharset()));
 	}
 
@@ -48,7 +52,6 @@ public class Luria {
 	public static void runPrompt() throws IOException {
 		InputStreamReader input = new InputStreamReader(System.in);
 		BufferedReader reader = new BufferedReader(input);
-		
 		while (true) {
 			System.out.print("> ");
 			run(reader.readLine());

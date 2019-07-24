@@ -5,6 +5,7 @@ import syntacticanalysis.Expression.Assignment;
 import syntacticanalysis.Expression.Binary;
 import syntacticanalysis.Expression.Grouping;
 import syntacticanalysis.Expression.Literal;
+import syntacticanalysis.Expression.Logical;
 import syntacticanalysis.Expression.Unary;
 import syntacticanalysis.Expression.VariableExpression;
 import syntacticanalysis.Token;
@@ -69,6 +70,12 @@ public class PrettyPrinter implements Expression.Visitor<String> {
 
 	@Override
 	public String visitVariableExpression(VariableExpression expression) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitLogicalExpression(Logical expression) {
 		// TODO Auto-generated method stub
 		return null;
 	}
