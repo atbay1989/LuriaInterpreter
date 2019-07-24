@@ -2,6 +2,6 @@ package visitor;
 
 public interface Visitable {
 
-	public abstract Object accept(Visitor visitor);
+	public abstract Object accept(VisitorInterface visitor);
 
 }

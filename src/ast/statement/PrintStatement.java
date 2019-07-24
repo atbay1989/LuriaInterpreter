@@ -1,7 +1,7 @@
 package ast.statement;
 
 import ast.expression.Expression;
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class PrintStatement extends Statement {
 
@@ -21,7 +21,7 @@ public class PrintStatement extends Statement {
 	}
 
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 

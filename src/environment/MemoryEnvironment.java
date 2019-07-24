@@ -11,7 +11,7 @@ public class MemoryEnvironment {
 	private final MemoryEnvironment enclosing;
 	private final Map<String, Object> table = new HashMap<>();
 	
-	// constructors
+	// constructors: first is base case, i.e. global; second constructs with reference to its enclosing scope
 	public MemoryEnvironment() {
 		enclosing = null;
 	}
@@ -21,19 +21,21 @@ public class MemoryEnvironment {
 	}
 
 	// get()
-	public Object get(Token s) {
-		if (table.containsKey(s.lexeme)) {
-			return table.get(s.lexeme);
+	public Object get(Token symbols) {
+		if (table.containsKey(symbols.lexeme)) {
+			return table.get(symbols.lexeme);
 		}
-		if (enclosing != null) return enclosing.get(s);
+		if (enclosing != null) return enclosing.get(symbols);
 
-		throw new RuntimeError(s, "Error: Undefined variable '" + s.lexeme + "'.");
+		throw new RuntimeError(symbols, "Error: Variable '" + symbols.lexeme + "' is undefined.");
 	}
 
+	// loopup()
 	public void lookup(String symbol, Object value) {
 		table.put(symbol, value);
 	}
 	
+	// store()
 	public void store(Token symbol, Object value) {
 		if (table.containsKey(symbol.lexeme)) {
 			table.put(symbol.lexeme, value);
@@ -43,8 +45,7 @@ public class MemoryEnvironment {
 			enclosing.store(symbol, value);
 			return;
 		}
-		
-		throw new RuntimeError(symbol, "Error: Undefined variable '" + symbol.lexeme + "'.");
+		throw new RuntimeError(symbol, "Error: Variable '" + symbol.lexeme + "' is undefined.");
 	}
 	
 }

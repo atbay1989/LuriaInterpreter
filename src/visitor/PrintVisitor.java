@@ -11,7 +11,7 @@ import ast.statement.PrintStatement;
 import ast.statement.Statement;
 import ast.statement.VariableDeclaration;
 
-public class PrintVisitor implements Visitor {
+public class PrintVisitor implements VisitorInterface {
 
 	@Override
 	public Object visit(Program s, Object o) {

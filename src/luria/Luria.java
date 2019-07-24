@@ -24,20 +24,20 @@ public class Luria {
 	static boolean error = false;
 	static boolean runtimeError = false;
 	
-	// test path
+	// test path; hack to reach runFile
 	static String PATH = "src\\testsuite\\test.txt";
 	
 	// main
 	public static void main(String[] args) throws IOException {
-		runFile(PATH);
-/*		if (args.length > 1) {
+		//runFile(PATH);
+		if (args.length > 1) {
 			System.out.println("Usage: Luria [script]");
 			System.exit(666);
 		} else if (args.length == 1) {
 			runFile(args[0]);
 		} else {
 			runPrompt();
-		}*/
+		}
 	}
 	
 	// read and execute file from file path
@@ -64,17 +64,9 @@ public class Luria {
 		Scanner scanner = new Scanner(source);
 		List<Token> tokens = scanner.scanTokens();		
 	    Parser parser = new Parser(tokens);                    
-	    //Expression expression = parser.parse();
 	    List<Statement> statements = parser.parse();            
 	    if (error) return;
-	    //interpreter.interpret(expression);
 	    interpreter.interpret(statements);
-	    //System.out.println(new PrettyPrinter().print(expression));	
-/*		if (error) System.exit(667);		
-		// print tokens
-		for (Token token : tokens) {
-			System.out.println(token);
-		}*/
 	}
 	
 	public static void error(int line, String message) {
