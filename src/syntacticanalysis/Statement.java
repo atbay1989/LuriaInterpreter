@@ -1,5 +1,7 @@
 package syntacticanalysis;
 
+import java.util.List;
+
 import evaluator.Interpreter;
 
 public abstract class Statement {
@@ -7,9 +9,45 @@ public abstract class Statement {
 	public interface Visitor<T> {
 		T visitExpressionStatement(ExpressionStatement statement);
 		T visitPrintStatement(Print statement);
+		T visitVariableStatement(Variable statement);
+		T visitBlockStatement(Block statement);
+		T visitClassStatement(Class statement);
+		T visitFunctionStatement(Function statement);
 		
 	}
 
+	public static class Class extends Statement {
+
+		final Token symbol;
+		final Expression.VariableExpression superClass;
+		final List<Statement.Function> methods;
+		
+		public Class(Token symbol, Expression.VariableExpression superClass, List<Statement.Function> methods) {
+			this.symbol = symbol;
+			this.superClass = superClass;
+			this.methods = methods;
+		}
+
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitClassStatement(this);
+		}
+
+	}
+
+	public static class Block extends Statement {
+		
+		public final List<Statement> statements;
+		
+		Block(List<Statement> statements) {
+			this.statements = statements;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitBlockStatement(this);
+		}
+	}
+	
 	public static class ExpressionStatement extends Statement {
 		
 		public final Expression expression;
@@ -24,6 +62,24 @@ public abstract class Statement {
 	    
 	}
 
+	public static class Function extends Statement {
+
+		final Token symbol;
+		final List<Token> parameters;
+		final List<Statement> body;
+
+		public Function(Token symbol, List<Token> parameters, List<Statement> body) {
+			this.symbol = symbol;
+			this.parameters = parameters;
+			this.body = body;
+		}
+
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitFunctionStatement(this);
+		}
+
+	}
+
 	public static class Print extends Statement {
 		
 		public final Expression expression;
@@ -36,6 +92,22 @@ public abstract class Statement {
 			return visitor.visitPrintStatement(this);
 		}
 		
+	}
+	
+	public static class Variable extends Statement {
+
+		public final Token symbol;
+		public final Expression initialisation;
+
+		Variable(Token symbol, Expression initialisation) {
+			this.symbol = symbol;
+			this.initialisation = initialisation;
+		}
+
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitVariableStatement(this);
+		}
+
 	}
 
 	public abstract <T> T accept(Visitor<T> visitor);
