@@ -1,14 +1,20 @@
 package evaluator;
 
 import syntacticanalysis.Expression;
+import syntacticanalysis.Expression.Assignment;
 import syntacticanalysis.Expression.Binary;
 import syntacticanalysis.Expression.Grouping;
 import syntacticanalysis.Expression.Literal;
 import syntacticanalysis.Expression.Unary;
+import syntacticanalysis.Expression.VariableExpression;
 import syntacticanalysis.RuntimeError;
 import syntacticanalysis.Token;
 import syntacticanalysis.Statement;
+import syntacticanalysis.Statement.Block;
+import syntacticanalysis.Statement.Class;
+import syntacticanalysis.Statement.Function;
 import syntacticanalysis.Statement.Print;
+import syntacticanalysis.Statement.Variable;
 
 import static syntacticanalysis.TokenType.*;
 
@@ -16,9 +22,12 @@ import java.util.List;
 
 import org.w3c.dom.Text;
 
+import environment.MemoryEnvironment;
 import luria.Luria;
 
 public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor<Void> {
+	
+	private MemoryEnvironment environment = new MemoryEnvironment();  
 
 /*	public void interpret(Expression e) {
 		try {
@@ -47,6 +56,19 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		s.accept(this);
 	}
 	
+	private void executeBlock(List<Statement> statements, MemoryEnvironment environment) {
+		MemoryEnvironment previous = this.environment;
+		try {
+			this.environment = environment;
+			for (Statement s : statements) {
+				execute(s);
+			}
+
+		} finally {
+			this.environment = previous;
+		}
+	}
+
 	@Override
 	public Object visitBinaryExpression(Binary e) {
 		Object left = evaluate(e.left);
@@ -156,6 +178,47 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	public Void visitPrintStatement(Print statement) {
 		Object value = evaluate(statement.expression);
 		System.out.println(stringify(value));
+		return null;
+	}
+
+	@Override
+	public Void visitVariableStatement(Variable statement) {
+		Object value = null;
+		if (statement.initialisation != null) {
+			value = evaluate(statement.initialisation);
+		}
+	    environment.lookup(statement.symbol.lexeme, value);
+	    return null; 
+	}
+
+	@Override
+	public Object visitVariableExpression(VariableExpression expression) {
+		return environment.get(expression.symbol);
+	}
+
+	@Override
+	public Object visitAssignmentExpression(Assignment expression) {
+	    Object value = evaluate(expression.value);
+	    
+	    environment.store(expression.symbol, value);
+		return value;
+	}
+
+	@Override
+	public Void visitBlockStatement(Block statement) {
+	    executeBlock(statement.statements, new MemoryEnvironment(environment));
+		return null;
+	}
+
+	@Override
+	public Void visitClassStatement(Class statement) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Void visitFunctionStatement(Function statement) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 	

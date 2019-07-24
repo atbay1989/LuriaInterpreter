@@ -1,10 +1,12 @@
 package visitor;
 
 import syntacticanalysis.Expression;
+import syntacticanalysis.Expression.Assignment;
 import syntacticanalysis.Expression.Binary;
 import syntacticanalysis.Expression.Grouping;
 import syntacticanalysis.Expression.Literal;
 import syntacticanalysis.Expression.Unary;
+import syntacticanalysis.Expression.VariableExpression;
 import syntacticanalysis.Token;
 import syntacticanalysis.TokenType;
 
@@ -57,5 +59,17 @@ public class PrettyPrinter implements Expression.Visitor<String> {
 				new Token(TokenType.ASTERISK, "*", null, 1), new Expression.Grouping(new Expression.Literal(5)));
 
 		System.out.println(new PrettyPrinter().print(expression));
+	}
+
+	@Override
+	public String visitAssignmentExpression(Assignment expression) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitVariableExpression(VariableExpression expression) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
