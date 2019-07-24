@@ -2,7 +2,7 @@ package ast.statement;
 
 import java.util.Collection;
 
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class BlockStatement extends Statement {
 
@@ -17,7 +17,7 @@ public class BlockStatement extends Statement {
 	}
 
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 

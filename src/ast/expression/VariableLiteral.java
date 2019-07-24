@@ -1,7 +1,7 @@
 package ast.expression;
 
 import ast.Signifier;
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class VariableLiteral extends Expression {
 
@@ -17,7 +17,7 @@ public class VariableLiteral extends Expression {
 	}
 	
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 	

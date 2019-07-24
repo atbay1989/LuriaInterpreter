@@ -1,7 +1,7 @@
 package ast;
 
 import ast.statement.Statement;
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class Program extends ASTNode {
 
@@ -12,7 +12,7 @@ public class Program extends ASTNode {
 	}
 	
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 

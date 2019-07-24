@@ -1,6 +1,6 @@
 package ast.expression;
 
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class AssignmentExpression extends Expression {
 	
@@ -27,7 +27,7 @@ public class AssignmentExpression extends Expression {
 	}
 
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 		

@@ -1,33 +1,40 @@
 package visitor;
 
-import ast.Program;
-import ast.expression.ArithmeticBinaryExpression;
-import ast.expression.AssignmentExpression;
-import ast.expression.IntegerLiteral;
-import ast.expression.Variable;
-import ast.expression.VariableLiteral;
-import ast.statement.BlockStatement;
-import ast.statement.PrintStatement;
-import ast.statement.Statement;
-import ast.statement.VariableDeclaration;
+import syntacticanalysis.Statement.Block;
+import syntacticanalysis.Statement.Class;
+import syntacticanalysis.Statement.ExpressionStatement;
+import syntacticanalysis.Statement.Function;
+import syntacticanalysis.Statement.If;
+import syntacticanalysis.Statement.Print;
+import syntacticanalysis.Statement.Variable;
+import syntacticanalysis.Statement.While;
 
-public interface Visitor {
-	
-	// program
-	public abstract Object visit(Program s, Object o);
-	
+import syntacticanalysis.Expression.Assignment;
+import syntacticanalysis.Expression.Binary;
+import syntacticanalysis.Expression.Grouping;
+import syntacticanalysis.Expression.Literal;
+import syntacticanalysis.Expression.Logical;
+import syntacticanalysis.Expression.Unary;
+import syntacticanalysis.Expression.VariableExpression;
+
+public interface Visitor<T> {
 	// statements
-	public abstract Object visit(Statement s, Object o);
-	public abstract Object visit(BlockStatement s, Object o);
-	public abstract Object visit(PrintStatement s, Object o);
-	public abstract Object visit(VariableDeclaration s, Object o);
+	T visitExpressionStatement(ExpressionStatement statement);
+	T visitPrintStatement(Print statement);
+	T visitVariableStatement(Variable statement);
+	T visitBlockStatement(Block statement);
+	T visitClassStatement(Class statement);
+	T visitFunctionStatement(Function statement);
+	T visitIfStatement(If statement);
+	T visitWhileStatement(While statement);
 	
 	// expressions
-	public abstract Object visit(ArithmeticBinaryExpression e, Object o);
-	// change AssignmentExpression to statement?
-	public abstract Object visit(AssignmentExpression e, Object o);
-	public abstract Object visit(IntegerLiteral e, Object o);
-	public abstract Object visit(Variable e, Object o);
-	public abstract Object visit(VariableLiteral e, Object o);
-
+	T visitAssignmentExpression(Assignment expression);
+	T visitBinaryExpression(Binary expression);
+	T visitGroupingExpression(Grouping expression);
+	T visitLiteralExpression(Literal expression);
+	T visitUnaryExpression(Unary expression);
+	T visitLogicalExpression(Logical expression);
+    T visitVariableExpression(VariableExpression expression);
+    
 }

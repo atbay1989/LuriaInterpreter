@@ -2,7 +2,7 @@ package ast.statement;
 
 import ast.Signifier;
 import ast.expression.Expression;
-import visitor.Visitor;
+import visitor.VisitorInterface;
 
 public class VariableDeclaration extends Statement {
 
@@ -23,7 +23,7 @@ public class VariableDeclaration extends Statement {
 	}
 
 	@Override
-	public Object accept(Visitor visitor) {
+	public Object accept(VisitorInterface visitor) {
 		return visitor.visit(this, null);
 	}
 
