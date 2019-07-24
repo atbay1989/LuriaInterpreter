@@ -62,6 +62,9 @@ public abstract class Expression {
 	}
 
 	public static class Literal extends Expression {
+		
+		public final Object value;
+
 		public Literal(Object value) {
 			this.value = value;
 		}
@@ -70,7 +73,6 @@ public abstract class Expression {
 			return visitor.visitLiteralExpression(this);
 		}
 
-		public final Object value;
 	}
 
 	public static class Unary extends Expression {
