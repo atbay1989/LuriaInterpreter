@@ -1,4 +1,4 @@
-package syntacticanalysis;
+package lexical_analysis;
 
 public enum TokenType {
 	// one character token
