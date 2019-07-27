@@ -1,10 +1,12 @@
-package syntacticanalysis;
+package syntactic_analysis;
 
-import static syntacticanalysis.TokenType.*;
+import static lexical_analysis.TokenType.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import lexical_analysis.Token;
+import lexical_analysis.TokenType;
 import luria.Luria;
 
 public class Parser {

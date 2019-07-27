@@ -3,8 +3,8 @@ package environment;
 import java.util.HashMap;
 import java.util.Map;
 
-import syntacticanalysis.RuntimeError;
-import syntacticanalysis.Token;
+import lexical_analysis.Token;
+import syntactic_analysis.RuntimeError;
 
 public class MemoryEnvironment {
 
@@ -18,7 +18,7 @@ public class MemoryEnvironment {
 	
 	public MemoryEnvironment(MemoryEnvironment enclosing) {
 		this.enclosing = enclosing;
-	}
+	} 
 
 	// get()
 	public Object get(Token symbols) {

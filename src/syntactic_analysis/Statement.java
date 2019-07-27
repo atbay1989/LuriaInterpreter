@@ -1,8 +1,9 @@
-package syntacticanalysis;
+package syntactic_analysis;
 
 import java.util.List;
 
 import evaluator.Interpreter;
+import lexical_analysis.Token;
 
 public abstract class Statement {
 	

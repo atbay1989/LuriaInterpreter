@@ -1,21 +1,20 @@
 package visitor;
 
-import syntacticanalysis.Statement.Block;
-import syntacticanalysis.Statement.Class;
-import syntacticanalysis.Statement.ExpressionStatement;
-import syntacticanalysis.Statement.Function;
-import syntacticanalysis.Statement.If;
-import syntacticanalysis.Statement.Print;
-import syntacticanalysis.Statement.Variable;
-import syntacticanalysis.Statement.While;
-
-import syntacticanalysis.Expression.Assignment;
-import syntacticanalysis.Expression.Binary;
-import syntacticanalysis.Expression.Grouping;
-import syntacticanalysis.Expression.Literal;
-import syntacticanalysis.Expression.Logical;
-import syntacticanalysis.Expression.Unary;
-import syntacticanalysis.Expression.VariableExpression;
+import syntactic_analysis.Expression.Assignment;
+import syntactic_analysis.Expression.Binary;
+import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Literal;
+import syntactic_analysis.Expression.Logical;
+import syntactic_analysis.Expression.Unary;
+import syntactic_analysis.Expression.VariableExpression;
+import syntactic_analysis.Statement.Block;
+import syntactic_analysis.Statement.Class;
+import syntactic_analysis.Statement.ExpressionStatement;
+import syntactic_analysis.Statement.Function;
+import syntactic_analysis.Statement.If;
+import syntactic_analysis.Statement.Print;
+import syntactic_analysis.Statement.Variable;
+import syntactic_analysis.Statement.While;
 
 public interface Visitor<T> {
 	// statements

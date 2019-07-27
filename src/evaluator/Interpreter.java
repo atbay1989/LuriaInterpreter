@@ -1,32 +1,31 @@
 package evaluator;
 
-import syntacticanalysis.Expression;
-import syntacticanalysis.Expression.Assignment;
-import syntacticanalysis.Expression.Binary;
-import syntacticanalysis.Expression.Grouping;
-import syntacticanalysis.Expression.Literal;
-import syntacticanalysis.Expression.Logical;
-import syntacticanalysis.Expression.Unary;
-import syntacticanalysis.Expression.VariableExpression;
-import syntacticanalysis.RuntimeError;
-import syntacticanalysis.Token;
-import syntacticanalysis.Statement;
-import syntacticanalysis.Statement.Block;
-import syntacticanalysis.Statement.Class;
-import syntacticanalysis.Statement.Function;
-import syntacticanalysis.Statement.If;
-import syntacticanalysis.Statement.Print;
-import syntacticanalysis.Statement.Variable;
-import syntacticanalysis.Statement.While;
-
-import static syntacticanalysis.TokenType.*;
+import static lexical_analysis.TokenType.*;
 
 import java.util.List;
 
 import org.w3c.dom.Text;
 
 import environment.MemoryEnvironment;
+import lexical_analysis.Token;
 import luria.Luria;
+import syntactic_analysis.Expression;
+import syntactic_analysis.RuntimeError;
+import syntactic_analysis.Statement;
+import syntactic_analysis.Expression.Assignment;
+import syntactic_analysis.Expression.Binary;
+import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Literal;
+import syntactic_analysis.Expression.Logical;
+import syntactic_analysis.Expression.Unary;
+import syntactic_analysis.Expression.VariableExpression;
+import syntactic_analysis.Statement.Block;
+import syntactic_analysis.Statement.Class;
+import syntactic_analysis.Statement.Function;
+import syntactic_analysis.Statement.If;
+import syntactic_analysis.Statement.Print;
+import syntactic_analysis.Statement.Variable;
+import syntactic_analysis.Statement.While;
 
 public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor<Void> {
 	
@@ -172,7 +171,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitExpressionStatement(syntacticanalysis.Statement.ExpressionStatement statement) {
+	public Void visitExpressionStatement(syntactic_analysis.Statement.ExpressionStatement statement) {
 		evaluate(statement.expression);
 		return null;
 	}

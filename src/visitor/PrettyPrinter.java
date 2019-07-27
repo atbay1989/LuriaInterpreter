@@ -1,15 +1,15 @@
 package visitor;
 
-import syntacticanalysis.Expression;
-import syntacticanalysis.Expression.Assignment;
-import syntacticanalysis.Expression.Binary;
-import syntacticanalysis.Expression.Grouping;
-import syntacticanalysis.Expression.Literal;
-import syntacticanalysis.Expression.Logical;
-import syntacticanalysis.Expression.Unary;
-import syntacticanalysis.Expression.VariableExpression;
-import syntacticanalysis.Token;
-import syntacticanalysis.TokenType;
+import lexical_analysis.Token;
+import lexical_analysis.TokenType;
+import syntactic_analysis.Expression;
+import syntactic_analysis.Expression.Assignment;
+import syntactic_analysis.Expression.Binary;
+import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Literal;
+import syntactic_analysis.Expression.Logical;
+import syntactic_analysis.Expression.Unary;
+import syntactic_analysis.Expression.VariableExpression;
 
 public class PrettyPrinter implements Expression.Visitor<String> {
 	

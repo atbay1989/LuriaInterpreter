@@ -1,4 +1,6 @@
-package syntacticanalysis;
+package syntactic_analysis;
+
+import lexical_analysis.Token;
 
 public abstract class Expression {
 
