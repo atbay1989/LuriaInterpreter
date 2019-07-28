@@ -1,49 +1,36 @@
 package syntactic_analysis;
 
-import static lexical_analysis.TokenType.*;
-
+/*Java imports.*/
 import java.util.ArrayList;
 import java.util.List;
 
+/*Luria imports.*/
+import luria.Luria;
 import lexical_analysis.Token;
 import lexical_analysis.TokenType;
-import luria.Luria;
+import static lexical_analysis.TokenType.*;
 
 public class Parser {
-	
+/*	Fields. 'tokens' represents the Parser input, a List of Token objects, 'current' the Parser position counter.*/
 	private final List<Token> tokens;
-	// pointer to current Token
 	private int current = 0;
 	
-	// constructor
+/*	Constructor.*/
 	public Parser(List<Token> tokens) {
 		this.tokens = tokens;
 	}
 
-	// entry method parse()
-/*	public Expression parse() {
-		try {
-			return expression();
-		} catch (ParserError error) {
-			return null;
-		}
-	}*/
+/*	parse() returns the output of the Parser as a List of Statement objects. It initiates the parsing procedure until the EOF token
+	is encountered.*/
 	public List<Statement> parse() {
 		List<Statement> statements = new ArrayList<>();
 		while (!end()) {
-			//statements.add(statement());
 			statements.add(declaration());       
 		}
 		return statements;
 	}
 
-	// expression()
-	private Expression expression() {
-		//return equality();
-		return assignment();
-	}
-	
-	// declaration
+/*	declaration() */
 	private Statement declaration() {
 		try {
 			if (match(VARIABLE))
@@ -54,7 +41,7 @@ public class Parser {
 			return null;
 		}
 	}
-
+	
 	// statement()
 	private Statement statement() {
 		if (match(IF)) return ifStatement(); 
@@ -62,7 +49,11 @@ public class Parser {
 		if (match(PRINT)) return printStatement();		
 		if (match(LEFT_BRACE)) return new Statement.Block(block());
 		return expressionStatement();
-
+	}
+	
+	// expression()
+	private Expression expression() {
+		return assignment();
 	}
 	
 	private Statement whileStatement() {
@@ -128,7 +119,6 @@ public class Parser {
 	
 	// assignment()
 	private Expression assignment() {
-		//Expression e = equality();
 	    Expression e = or();  
 		if (match(EQUAL)) {
 			Token result = previous();
@@ -151,7 +141,6 @@ public class Parser {
 	      Expression right = and();                            
 	      e = new Expression.Logical(e, operator, right);
 	    }                                                
-
 	    return e;  
 	}
 
@@ -163,7 +152,6 @@ public class Parser {
 	      Expression right = equality();                       
 	      e = new Expression.Logical(e, operator, right);
 	    }                                                
-
 	    return e; 
 	}
 
@@ -301,10 +289,10 @@ public class Parser {
 		}
 	}
 	
-	// nested ParserError class
+// This is the nested ParserError class.
 	private static class ParserError extends RuntimeException {}
 	
-	// ParserError helper
+	// ParserError() is a helper method.
 	private ParserError error(Token token, String message) {
 		Luria.error(token, message);
 		return new ParserError();
