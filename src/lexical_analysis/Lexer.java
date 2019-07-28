@@ -1,3 +1,8 @@
+/*The Lexer class is responsible for the lexical analysis of the input source code passed as a String. It converts reserved
+character sequences or lexemes, e.g. 'variable', ''!=' into atomised tokens and adds them to an ArrayList, else it converts
+them into STRING, NUMBER, or SIGNIFIER (variable identifier) tokens. The Token ArrayList represents the output of the Lexer
+class.*/
+
 package lexical_analysis;
 
 import static lexical_analysis.TokenType.*;
@@ -26,9 +31,9 @@ public class Lexer {
 	static {
 		reservedSequence = new HashMap<>();
 		reservedSequence.put("and", AND);
-		//reservedSequence.put("class", CLASS);
 		reservedSequence.put("else", ELSE);
 		reservedSequence.put("false", FALSE);
+		reservedSequence.put("true", TRUE);
 		reservedSequence.put("for", FOR);
 		reservedSequence.put("function", FUNCTION);
 		reservedSequence.put("if", IF);
@@ -47,10 +52,27 @@ public class Lexer {
 		this.sourceCode = sourceCode;
 	}
 	
+// These are the helper methods of the Lexer class.
+	
 	// consume() increments the current counter and returns the next char to lex.
 	private char consume() {
 		current++;
 		return sourceCode.charAt(current - 1);
+	}
+	
+	// alphabeticChar() checks whether a char is an alphabetic character or '_'.
+	private boolean alphabeticChar(char c) {
+		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+	}
+
+	// numericChar() checks whether a char is a numeric digit.
+	private boolean numericChar(char c) {
+		return c >= '0' && c <= '9';
+	}
+	
+	// alphanumericChar() checks whether a char is alphabetic or numeric.
+	public boolean alphanumericChar(char c) {
+		return alphabeticChar(c) || numericChar(c);
 	}
 	
 	// addToken() 
@@ -63,6 +85,42 @@ public class Lexer {
 		String lexeme = sourceCode.substring(start, current);
 		tokens.add(new Token(type, lexeme, literal, location));
 	}
+	
+	// match()
+	private boolean manyChar(char c) {
+		if (end()) {
+			return false;
+		}
+		if (sourceCode.charAt(current) != c) {
+			return false;
+		}
+		current++;
+		return true;
+	}
+
+	// peek()
+	private char lookahead() {
+		if (end()) {
+			return '\0';
+		}
+
+		return sourceCode.charAt(current);
+	}
+
+	// peekNext()
+	private char lookaheadNext() {
+		if (current + 1 >= sourceCode.length()) {
+			return '\0';
+		}
+		return sourceCode.charAt(current + 1);
+	}
+	
+	// end(). current >= length of sourceCode
+	private boolean end() {
+		return current >= sourceCode.length();
+	}
+	
+// These are the primary lexical analysis methods.	
 
 	// lexSourceCode()
 	public List<Token> lexSourceCode() {
@@ -101,17 +159,17 @@ public class Lexer {
 		case '*': addToken(ASTERISK);
 			break;
 		// one or many character token
-		case '!': addToken(match('=') ? EXCLAMATION_EQUAL : EXCLAMATION);
+		case '!': addToken(manyChar('=') ? EXCLAMATION_EQUAL : EXCLAMATION);
 			break;
-		case '=': addToken(match('=') ? EQUAL_EQUAL : EQUAL);
+		case '=': addToken(manyChar('=') ? EQUAL_EQUAL : EQUAL);
 			break;
-		case '<': addToken(match('=') ? LESS_EQUAL : LESS);
+		case '<': addToken(manyChar('=') ? LESS_EQUAL : LESS);
 			break;
-		case '>': addToken(match('=') ? GREATER_EQUAL : GREATER);
+		case '>': addToken(manyChar('=') ? GREATER_EQUAL : GREATER);
 			break;
 		case '/':
-			if (match('/')) {
-				while (peek() != '\n' && !end()) {
+			if (manyChar('/')) {
+				while (lookahead() != '\n' && !end()) {
 					consume();
 				}
 			} else {
@@ -129,68 +187,41 @@ public class Lexer {
 			break;
 		// string
 		case '"':
-			string();
+			lexString();
 			break;
-		// default number, identifier, else error
+/*		A lexeme beginning with a numeric digit is assumed to be a number; a lexeme beginning with an alphabetic 
+		character is assumed to be a signifier, i.e. a variable name.*/
 		default:
 			if (numericChar(c)) {
-				number();
+				lexNumber();
 			} else if (alphabeticChar(c)) {
-				signifier();
+				lexSignifier();
 			} else {
 				Luria.error(location, "Error: unexpected character.");
 			}
 		}
 	}
-
-/*	signifier() checks a char sequence not prefixed with a quotation mark (") against the reserved sequences.
-	If no type (null) is returned, it adds a Token of type SIGNIFIER.*/
-	private void signifier() {
-		while (alphanumericChar(peek())) {
-			consume();
-		}
-		String text = sourceCode.substring(start, current);
-		TokenType type = reservedSequence.get(text);
-		if (type == null)
-			type = SIGNIFIER;
-		addToken(type);
-	}
-
-	// alphabeticChar()
-	private boolean alphabeticChar(char c) {
-		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
-	}
-
-	// alphanumericChar()
-	public boolean alphanumericChar(char c) {
-		return alphabeticChar(c) || numericChar(c);
-	}
-	
-	// numericChar()
-	private boolean numericChar(char c) {
-		return c >= '0' && c <= '9';
-	}
-
-	// number();
-	private void number() {
-		while (numericChar(peek())) {
+		
+	// lexNumber() 
+	private void lexNumber() {
+		while (numericChar(lookahead())) {
 			consume();
 		}
 		
-		if (peek() == '.' && numericChar(peekNext())) {
+		if (lookahead() == '.' && numericChar(lookaheadNext())) {
 			consume();
 
-			while (numericChar(peek())) {
+			while (numericChar(lookahead())) {
 				consume();
 			}
 		}
 		addToken(NUMBER, Double.parseDouble(sourceCode.substring(start, current)));
 	}
 
-	// string()
-	private void string() {
-		while (peek() != '"' && !end()) {
-			if (peek() == '\n')
+	// lexString()
+	private void lexString() {
+		while (lookahead() != '"' && !end()) {
+			if (lookahead() == '\n')
 				location++;
 			consume();
 		}
@@ -203,35 +234,17 @@ public class Lexer {
 		addToken(STRING, value);
 	}
 
-	private boolean match(char expected) {
-		if (end()) {
-			return false;
+	/*	lexSignifier() checks a char sequence not prefixed with a quotation mark (") against the reserved sequences.
+	If no type (null) is returned, it adds a Token of type SIGNIFIER.*/
+	private void lexSignifier() {
+		while (alphanumericChar(lookahead())) {
+			consume();
 		}
-		if (sourceCode.charAt(current) != expected) {
-			return false;
-		}
-		current++;
-		return true;
-	}
-
-	private char peek() {
-		if (end()) {
-			return '\0';
-		}
-
-		return sourceCode.charAt(current);
-	}
-
-	private char peekNext() {
-		if (current + 1 >= sourceCode.length()) {
-			return '\0';
-		}
-		return sourceCode.charAt(current + 1);
-	}
-	
-	// end(). current >= length of sourceCode
-	private boolean end() {
-		return current >= sourceCode.length();
+		String text = sourceCode.substring(start, current);
+		TokenType type = reservedSequence.get(text);
+		if (type == null)
+			type = SIGNIFIER;
+		addToken(type);
 	}
 	
 }

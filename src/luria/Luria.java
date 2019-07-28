@@ -1,7 +1,9 @@
 package luria;
 
+import java.io.BufferedReader;
 // Java imports
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,12 +29,13 @@ public class Luria {
 
 	// main
 	public static void main(String[] args) throws IOException {
-		readFile(PATH);
+		//readFile(PATH);
 		/*
 		 * if (args.length > 1) { System.out.println("Usage: Luria [script]");
 		 * System.exit(666); } else if (args.length == 1) { runFile(args[0]); } else {
 		 * runPrompt(); }
 		 */
+		runPrompt();
 	}
 
 	// read and execute file from file path
@@ -56,12 +59,15 @@ public class Luria {
 		interpreter.interpret(statements);
 	}
 
-	/*
-	 * public static void runPrompt() throws IOException { InputStreamReader input =
-	 * new InputStreamReader(System.in); BufferedReader reader = new
-	 * BufferedReader(input); while (true) { System.out.print("> ");
-	 * run(reader.readLine()); error = false; } }
-	 */
+	public static void runPrompt() throws IOException {
+		InputStreamReader input = new InputStreamReader(System.in);
+		BufferedReader reader = new BufferedReader(input);
+		while (true) {
+			System.out.print("> ");
+			runLuria(reader.readLine());
+			error = false;
+		}
+	}
 
 	// error handling
 
