@@ -37,7 +37,7 @@ public class Lexer {
 		reservedSequence.put("for", FOR);
 		reservedSequence.put("function", FUNCTION);
 		reservedSequence.put("if", IF);
-		reservedSequence.put("nil", NIL);
+		reservedSequence.put("null", NULL);
 		reservedSequence.put("or", OR);
 		reservedSequence.put("print", PRINT);
 		reservedSequence.put("return", RETURN);
