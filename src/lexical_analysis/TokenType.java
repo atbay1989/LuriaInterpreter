@@ -16,12 +16,12 @@ public enum TokenType {
 	
 	// one or many character token
 	EXCLAMATION,
-	EXCLAMATION_EQUAL,
 	EQUAL,
-	EQUAL_EQUAL,
 	GREATER,
-	GREATER_EQUAL,
 	LESS,
+	EXCLAMATION_EQUAL,
+	EQUAL_EQUAL,
+	GREATER_EQUAL,
 	LESS_EQUAL,
 	
 	// literal
@@ -37,7 +37,7 @@ public enum TokenType {
 	FUNCTION,
 	FOR,
 	IF,
-	NIL,
+	NULL,
 	OR,
 	PRINT,
 	RETURN,

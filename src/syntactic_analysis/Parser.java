@@ -1,3 +1,6 @@
+/*The Parser class is responsible for parsing or _ a context-free List of Token objects, representing the source code as lexed. Each non-terminal
+  expression has a method routine.*/
+
 package syntactic_analysis;
 
 /*Java imports.*/
@@ -20,7 +23,78 @@ public class Parser {
 		this.tokens = tokens;
 	}
 
-/*	parse() returns the output of the Parser as a List of Statement objects. It initiates the parsing procedure until the EOF token
+/*  The nested ParserError class.*/
+	private static class ParserError extends RuntimeException {}
+	
+/*Parser helper methods.*/
+
+	/* error() calls the Luria error() method and returns a ParserError object.*/
+	private ParserError error(Token token, String error) {
+		Luria.error(token, error);
+		return new ParserError();
+	}
+	
+	private Token advance() {
+		if (!end())
+			current++;
+		return previous();
+	}
+	
+	private Token consume(TokenType type, String error) {
+		if (check(type)) return advance();
+		throw error(peek(), error);
+	}
+	
+	private Token peek() {
+		return tokens.get(current);
+	}
+	
+	private Token previous() {
+		return tokens.get(current - 1);
+	}
+
+	// match()
+	private boolean match(TokenType... types) {
+		for (TokenType t : types) {
+			if (check(t)) {
+				advance();
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// check()
+	private boolean check(TokenType t) {
+		if (end()) 
+			return false;		
+		return peek().type == t;
+	}
+	
+	private boolean end() {
+		return peek().type == EOF;
+	}
+	
+	private void sync() {
+		advance();
+		while (!end()) {
+			if (previous().type == SEMI_COLON)
+				return;
+			switch (peek().type) {
+			case FUNCTION:
+			case VARIABLE:
+			case FOR:
+			case IF:
+			case WHILE:
+			case PRINT:
+			case RETURN:
+				return;
+			}
+			advance();
+		}
+	}
+	
+/*	parse() returns the output of the Parser as a List of Statement objects. It calls the top parsing procedure until the EOF token
 	is encountered.*/
 	public List<Statement> parse() {
 		List<Statement> statements = new ArrayList<>();
@@ -30,32 +104,163 @@ public class Parser {
 		return statements;
 	}
 
-/*	declaration() */
+/*	declaration() checks for a VARIABLE token and calls the variable declaration procedure, else the statement procedure.*/
 	private Statement declaration() {
 		try {
 			if (match(VARIABLE))
 				return variableDeclaration();
 			return statement();
 		} catch (ParserError error) {
-			synchronize();
+			sync();
 			return null;
 		}
 	}
 	
-	// statement()
-	private Statement statement() {
-		if (match(IF)) return ifStatement(); 
-		if (match(WHILE)) return whileStatement();
-		if (match(PRINT)) return printStatement();		
-		if (match(LEFT_BRACE)) return new Statement.Block(block());
-		return expressionStatement();
+/*	variableDeclariation() instantiates a SIGNIFIER token object and if an EQUAL token is next encountered by the parser, returns a
+ 	Variable object with its initialisation expression, e.g. 'variable x = 1 + 2', else it returns an uninitialised Variable object
+ 	with no assigned expression, e.g. 'variable x;'*/
+	private Statement variableDeclaration() {
+		Token symbol = consume(SIGNIFIER, "Error: Invalid variable declaration.");
+		Expression initialisation = null;
+		if (match(EQUAL)) {
+			initialisation = expression();
+		}
+		consume(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
+		return new Statement.Variable(symbol, initialisation);
 	}
 	
-	// expression()
+/*	expression() calls assignment().*/
 	private Expression expression() {
 		return assignment();
 	}
 	
+/*	assignment().*/
+	private Expression assignment() {
+	    Expression e = or();  
+		if (match(EQUAL)) {
+			Token result = previous();
+			Expression value = assignment();
+			if (e instanceof Expression.VariableExpression) {
+				Token symbol = ((Expression.VariableExpression) e).symbol;
+				return new Expression.Assignment(symbol, value);
+			}	
+			error(result, "Error: Invalid assignment.");
+		}
+		return e;
+	}
+	
+/*	or().*/
+	private Expression or() {
+	    Expression e = and();
+	    while (match(OR)) {                              
+	      Token operator = previous();                   
+	      Expression right = and();                            
+	      e = new Expression.Logical(e, operator, right);
+	    }                                                
+	    return e;  
+	}
+	
+/*	and().*/
+	private Expression and() {
+	    Expression e = equality();
+	    while (match(AND)) {                             
+	      Token operator = previous();                   
+	      Expression right = equality();                       
+	      e = new Expression.Logical(e, operator, right);
+	    }                                                
+	    return e; 
+	}
+	
+/*	equality().*/
+	private Expression equality() {
+		Expression e = comparison();
+		while (match(EXCLAMATION_EQUAL, EQUAL_EQUAL)) {
+			Token operator = previous();
+			Expression right = comparison();
+			e = new Expression.Binary(e, operator, right);
+		}
+		return e;
+	}
+	
+/*	comparison().*/
+	private Expression comparison() {
+		Expression e = addition();	
+		while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+			Token operator = previous();
+			Expression right = addition();
+			e = new Expression.Binary(e, operator, right);
+		}
+		return e;
+	}
+	
+/*	addition().*/	
+	private Expression addition() {
+		Expression e = multiplication();
+
+		while (match(PLUS, MINUS)) {
+			Token operator = previous();
+			Expression right = multiplication();
+			e = new Expression.Binary(e, operator, right);
+		}
+		return e;
+	}
+
+/*	multiplication().*/
+	private Expression multiplication() {
+		Expression e = unary();
+
+		while (match(FORWARD_SLASH, ASTERISK)) {
+			Token operator = previous();
+			Expression rightOperand = unary();
+			e = new Expression.Binary(e, operator, rightOperand);
+		}
+		return e;
+	}
+	
+/*	unary().*/	
+	private Expression unary() {
+		if (match(EXCLAMATION, MINUS)) {
+			Token operator = previous();
+			Expression right = unary();
+			return new Expression.Unary(operator, right);
+		}
+		return primary();
+	}
+	
+/*	primary().*/
+	private Expression primary() {
+		if (match(FALSE))
+			return new Expression.Literal(false);
+		if (match(TRUE))
+			return new Expression.Literal(true);
+		if (match(NULL))
+			return new Expression.Literal(null);
+		if (match(NUMBER, STRING))
+			return new Expression.Literal(previous().literal);
+		if (match(SIGNIFIER)) {
+			return new Expression.VariableExpression(previous());
+		}
+		if (match(LEFT_PARENTHESIS)) {
+			Expression e = expression();
+			consume(RIGHT_PARENTHESIS, "Error: Expect ')' after expression.");
+			return new Expression.Grouping(e);
+		}
+		throw error(peek(), "Error: expect expression.");
+	}
+	
+	// statement()
+	private Statement statement() {
+		if (match(IF))
+			return ifStatement();
+		if (match(WHILE))
+			return whileStatement();
+		if (match(PRINT))
+			return printStatement();
+		if (match(LEFT_BRACE))
+			return new Statement.Block(block());
+		return expressionStatement();
+	}
+
 	private Statement whileStatement() {
 	    consume(LEFT_PARENTHESIS, "Error: Expect ( after 'while'.");   
 	    Expression condition = expression();                      
@@ -86,19 +291,6 @@ public class Parser {
 		return new Statement.Print(value);
 	}
 	
-	// variableDeclariation()
-	private Statement variableDeclaration() {
-		Token name = consume(SIGNIFIER, "Error: Expect variable name.");
-
-		Expression initializer = null;
-		if (match(EQUAL)) {
-			initializer = expression();
-		}
-
-		consume(SEMI_COLON, "Error: Expect ; after variable declaration.");
-		return new Statement.Variable(name, initializer);
-	}   
-	
 	// expressionStatement() {
 	private Statement expressionStatement() {
 		Expression e = expression();
@@ -108,195 +300,14 @@ public class Parser {
 	
 	// block()
 	private List<Statement> block() {
-		List<Statement> statements = new ArrayList<>();
+		List<Statement> block = new ArrayList<>();
 		
 		while (!check(RIGHT_BRACE) && !end()) {
-			statements.add(declaration());
+			block.add(declaration());
 		}
 		consume(RIGHT_BRACE, "Error: Expected } after block.");
-		return statements;
-	}
-	
-	// assignment()
-	private Expression assignment() {
-	    Expression e = or();  
-		if (match(EQUAL)) {
-			Token result = previous();
-			Expression value = assignment();
-			
-			if (e instanceof Expression.VariableExpression) {
-				Token symbol = ((Expression.VariableExpression) e).symbol;
-				return new Expression.Assignment(symbol, value);
-			}
-			
-			error(result, "Error: Invalid assignment.");
-		}
-		return e;
-	}
-	
-	private Expression or() {
-	    Expression e = and();
-	    while (match(OR)) {                              
-	      Token operator = previous();                   
-	      Expression right = and();                            
-	      e = new Expression.Logical(e, operator, right);
-	    }                                                
-	    return e;  
+		return block;
 	}
 
-	private Expression and() {
-	    Expression e = equality();
-
-	    while (match(AND)) {                             
-	      Token operator = previous();                   
-	      Expression right = equality();                       
-	      e = new Expression.Logical(e, operator, right);
-	    }                                                
-	    return e; 
-	}
-
-	// match()
-	private boolean match(TokenType... types) {
-		for (TokenType t : types) {
-			if (check(t)) {
-				advance();
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	// check()
-	private boolean check(TokenType t) {
-		if (end()) 
-			return false;		
-		return peek().type == t;
-	}
-	
-	private Token advance() {
-		if (!end())
-			current++;
-		return previous();
-	}
-	
-	private boolean end() {
-		return peek().type == EOF;
-	}
-
-	private Token peek() {
-		return tokens.get(current);
-	}
-	
-	private Token previous() {
-		return tokens.get(current - 1);
-	}
-	
-	// equality()
-	private Expression equality() {
-		Expression e = comparison();
-		
-		while (match(EXCLAMATION_EQUAL, EQUAL_EQUAL)) {
-			Token operator = previous();
-			Expression right = comparison();
-			e = new Expression.Binary(e, operator, right);
-		}
-		return e;
-	}
-
-	private Expression comparison() {
-		Expression e = addition();
-		
-		while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-			Token operator = previous();
-			Expression right = addition();
-			e = new Expression.Binary(e, operator, right);
-		}
-		return e;
-	}
-
-	private Expression addition() {
-		Expression e = multiplication();
-
-		while (match(PLUS, MINUS)) {
-			Token operator = previous();
-			Expression right = multiplication();
-			e = new Expression.Binary(e, operator, right);
-		}
-		return e;
-	}
-
-	private Expression multiplication() {
-		Expression e = unary();
-
-		while (match(FORWARD_SLASH, ASTERISK)) {
-			Token operator = previous();
-			Expression right = unary();
-			e = new Expression.Binary(e, operator, right);
-		}
-		return e;
-	}
-
-	private Expression unary() {
-		if (match(EXCLAMATION, MINUS)) {
-			Token operator = previous();
-			Expression right = unary();
-			return new Expression.Unary(operator, right);
-		}
-		return primary();
-	}
-	
-	private Expression primary() {
-		if (match(FALSE)) return new Expression.Literal(false);
-		if (match(TRUE)) return new Expression.Literal(true);
-		if (match(NIL)) return new Expression.Literal(null);
-		if (match(NUMBER, STRING)) return new Expression.Literal(previous().literal);
-	    if (match(SIGNIFIER)) {                      
-	        return new Expression.VariableExpression(previous());       
-	    }    
-		if (match(LEFT_PARENTHESIS)) {
-			Expression e = expression();
-			consume(RIGHT_PARENTHESIS, "Error: Expect ')' after expression.");
-			return new Expression.Grouping(e);
-		}
-	    throw error(peek(), "Error: expect expression.");
-	}
-
-	private Token consume(TokenType type, String message) {
-		if (check(type)) return advance();
-		throw error(peek(), message);
-	}
-
-	private void synchronize() {
-		advance();
-
-		while (!end()) {
-			if (previous().type == SEMI_COLON)
-				return;
-
-			switch (peek().type) {
-			case CLASS:
-			case FUNCTION:
-			case VARIABLE:
-			case FOR:
-			case IF:
-			case WHILE:
-			case PRINT:
-			case RETURN:
-				return;
-			}
-
-			advance();
-		}
-	}
-	
-// This is the nested ParserError class.
-	private static class ParserError extends RuntimeException {}
-	
-	// ParserError() is a helper method.
-	private ParserError error(Token token, String message) {
-		Luria.error(token, message);
-		return new ParserError();
-	}
-	
 }
 

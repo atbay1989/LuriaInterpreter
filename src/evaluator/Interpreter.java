@@ -93,8 +93,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 
 	private String stringify(Object o) {
 		if (o == null)
-			return "nil";
-
+			return "null";
 		if (o instanceof Double) {
 			String t = o.toString();
 			if (t.endsWith(".0")) {
