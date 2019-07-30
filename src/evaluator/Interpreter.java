@@ -26,6 +26,7 @@ import syntactic_analysis.Statement.Block;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
+import syntactic_analysis.Statement.Return;
 import syntactic_analysis.Statement.Variable;
 import syntactic_analysis.Statement.While;
 
@@ -269,6 +270,14 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		}
 		syntactic_analysis.Callable function = (syntactic_analysis.Callable) callee;
 		return function.call(this, arguments);
+	}
+
+	@Override
+	public Void visitReturnStatement(Return statement) {
+		Object value = null;
+		if (statement.value != null)
+			value = evaluate(statement.value);
+		throw new statement.Return(value);
 	}
 
 }

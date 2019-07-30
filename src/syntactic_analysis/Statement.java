@@ -15,9 +15,27 @@ public abstract class Statement {
 		T visitFunctionStatement(Function statement);
 		T visitIfStatement(If statement);
 		T visitWhileStatement(While statement);
+		T visitReturnStatement(Return statement);
 		
 	}
 
+	public static class Return extends Statement {
+		// Fields.
+		public final Token symbol;
+		public final Expression value;
+		
+		public Return(Token symbol, Expression value) {
+			this.symbol = symbol;
+			this.value = value;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitReturnStatement(this);
+		}
+		
+	}
+	
 	public static class Block extends Statement {
 		
 		public final List<Statement> statements;
