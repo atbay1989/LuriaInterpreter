@@ -1,5 +1,7 @@
 package syntactic_analysis;
 
+import java.util.List;
+
 import lexical_analysis.Token;
 
 public abstract class Expression {
@@ -12,6 +14,7 @@ public abstract class Expression {
 		T visitUnaryExpression(Unary expression);
 		T visitLogicalExpression(Logical expression);
 	    T visitVariableExpression(VariableExpression expression);
+		T visitCallExpression(Call expression);
 		
 	}
 
@@ -121,6 +124,27 @@ public abstract class Expression {
 		}
 	    
 	}
+	
+	public static class Call extends Expression {
+		// Fields.
+		public final Expression callee;
+		public final Token rightParenthesis;
+		public final List<Expression> arguments;
+		
+		// Constructor.
+		public Call(Expression callee, Token rightParenthesis, List<Expression> arguments) {
+			this.callee = callee;
+			this.rightParenthesis = rightParenthesis;
+			this.arguments = arguments;
+		}
+
+		// Visitor.
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitCallExpression(this);
+		}
+		
+	}
 
 	public static class VariableExpression extends Expression {
 		// fields
@@ -140,4 +164,5 @@ public abstract class Expression {
 	
 	// abstract visitor
 	public abstract <T> T accept(Visitor<T> visitor);
+	
 }

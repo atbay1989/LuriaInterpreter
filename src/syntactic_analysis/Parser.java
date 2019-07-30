@@ -109,6 +109,8 @@ public class Parser {
 		try {
 			if (match(VARIABLE))
 				return variableDeclaration();
+			if (match(FUNCTION))
+				return functionDeclaration();
 			return statement();
 		} catch (ParserError error) {
 			sync();
@@ -127,6 +129,21 @@ public class Parser {
 		}
 		consume(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
 		return new Statement.Variable(symbol, initialisation);
+	}
+	
+	private Statement functionDeclaration() {
+		Token symbol = consume(SIGNIFIER, "Error: Invalid function declaration");
+		consume(LEFT_PARENTHESIS, "Error: '(' expected to open arguments.");
+		List<Token> arguments = new ArrayList<>();
+		if (!check(RIGHT_PARENTHESIS)) {
+			do {
+				arguments.add(consume(SIGNIFIER, "Error: Invalid argument."));
+			} while (match(COMMA));
+		}
+		consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		consume(LEFT_BRACE, "Error: '{' expected to open block.");
+		List<Statement> functionBlock = block();
+		return new Statement.Function(symbol, arguments, functionBlock);
 	}
 	
 /*	expression() calls assignment().*/
@@ -225,10 +242,36 @@ public class Parser {
 			Expression operand = unary();
 			return new Expression.Unary(operator, operand);
 		}
-		return literal();
+		//return literal();
+		return call();
 	}
-	
-/*	primary().*/
+
+/*	call().*/
+	private Expression call() {
+		Expression e = literal();
+		while (true) {
+			if (match(LEFT_PARENTHESIS)) {
+				e = endCall(e);
+			} else {
+				break;
+			}
+		}
+		return e;
+	}
+
+/*	endCall().*/
+	private Expression endCall(Expression e) {
+		List<Expression> arguments = new ArrayList<>();
+		if (!check(RIGHT_PARENTHESIS)) {
+			do {
+				arguments.add(expression());
+			} while (match(COMMA));
+		}
+		Token rightParenthesis = consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		return new Expression.Call(e, rightParenthesis, arguments);
+	}
+
+/*	literal().*/
 	private Expression literal() {
 		if (match(FALSE))
 			return new Expression.Literal(false);

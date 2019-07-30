@@ -12,29 +12,10 @@ public abstract class Statement {
 		T visitPrintStatement(Print statement);
 		T visitVariableStatement(Variable statement);
 		T visitBlockStatement(Block statement);
-		T visitClassStatement(Class statement);
 		T visitFunctionStatement(Function statement);
 		T visitIfStatement(If statement);
 		T visitWhileStatement(While statement);
 		
-	}
-
-	public static class Class extends Statement {
-
-		final Token symbol;
-		final Expression.VariableExpression superClass;
-		final List<Statement.Function> methods;
-		
-		public Class(Token symbol, Expression.VariableExpression superClass, List<Statement.Function> methods) {
-			this.symbol = symbol;
-			this.superClass = superClass;
-			this.methods = methods;
-		}
-
-		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visitClassStatement(this);
-		}
-
 	}
 
 	public static class Block extends Statement {
@@ -67,14 +48,14 @@ public abstract class Statement {
 
 	public static class Function extends Statement {
 
-		final Token symbol;
-		final List<Token> parameters;
-		final List<Statement> body;
+		public final Token symbol;
+		public final List<Token> arguments;
+		public final List<Statement> functionBlock;
 
-		public Function(Token symbol, List<Token> parameters, List<Statement> body) {
+		public Function(Token symbol, List<Token> arguments, List<Statement> functionBlock) {
 			this.symbol = symbol;
-			this.parameters = parameters;
-			this.body = body;
+			this.arguments = arguments;
+			this.functionBlock = functionBlock;
 		}
 
 		public <T> T accept(Visitor<T> visitor) {
