@@ -1,10 +1,10 @@
 # ProjectLuria
 ### What is ProjectLuria?
-This is the implementation of an interpreter in Java for a simple C-like high-level-language named Luria. This is to fulfil requirements of an MSc.
+This is an implementation of an interpreter in Java for a simple high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
 ### Luria
-Luria is a simple C-like high-level language.
+Luria is a simple high-level language. It's syntax is C-like, but differs in that it is dynamically typed.
 
-It is dynamically typed; variables can represent a number (e.g. 1, 1.0, -1), a String (e.g. "0", "hello", "0world"), or a boolean (i.e. true, false).
+Variables can represent a number (e.g. 1, 1.0, -1), a String (e.g. "0", "hello", "0world"), or a boolean (i.e. true, false). Numbers are 'handled' by the interpreter as doubles; numbers ending ".0" are truncated upon their printing, e.g. "1.0" becomes "1".
 
 In valid Luria syntax we can declare variables as follows:
 
@@ -14,7 +14,7 @@ In valid Luria syntax we can declare variables as follows:
     x = false;
     x = 1 + 1;
 
-Luria supports the elementary arithmetic operators addition, subtraction, multiplication, and division.
+Luria supports the elementary arithmetic operators addition, subtraction, multiplication, and division. 
 
 Valid expressions include:
 
@@ -22,7 +22,7 @@ Valid expressions include:
     1 - 1;
     2 * 2;
     3 / 2;
-    0 / 1;
+    0 / 2;
 
 The addition operator can also be applied to strings:
 
@@ -38,13 +38,23 @@ Unary operators permit the expression of negative numbers and their binary opera
     -2 * -2;
     2 / -2;
 
-Boolean logic is supported in Luria and is expressed and unary operator ! represents NOT:
+Boolean logic is supported in Luria. and is expressed and unary operator ! represents NOT:
 
     variable x = true;
     variable y = false;
     !x;
     x == y;
     x != y;
+
+To declare a function:
+
+    function square(x) {
+        return x * x;
+    }
+
+A function call then be called:
+
+    print square(x);
 
 Luria allows for:
 #### identifiers
