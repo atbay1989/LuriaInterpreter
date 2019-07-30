@@ -8,11 +8,43 @@ It is dynamically typed; variables can represent a number (e.g. 1, 1.0, -1), a S
 
 In valid Luria syntax we can declare variables as follows:
 
-variable x;
-x = 1;
-x = "hello";
-x = false;
-x = 1 + 1;
+    variable x;
+    x = 1;
+    x = "hello";
+    x = false;
+    x = 1 + 1;
+
+Luria supports the elementary arithmetic operators addition, subtraction, multiplication, and division.
+
+Valid expressions include:
+
+    1 + 1;
+    1 - 1;
+    2 * 2;
+    3 / 2;
+    0 / 1;
+
+The addition operator can also be applied to strings:
+
+    variable x = "Hello, ";
+    variable y = "world!";
+    print x + y;
+
+Unary operators permit the expression of negative numbers and their binary operations are handled correctly:
+
+    -1 + 1;
+    -1 + -1;
+    -1 - -1;
+    -2 * -2;
+    2 / -2;
+
+Boolean logic is supported in Luria and is expressed and unary operator ! represents NOT:
+
+    variable x = true;
+    variable y = false;
+    !x;
+    x == y;
+    x != y;
 
 Luria allows for:
 #### identifiers
@@ -31,11 +63,3 @@ Each reserved word or keyword in Luria is mapped to an associated String and tok
 'else'
 'while'
 'function'
-
-#### Example instructions
-variable x = true;
-if (x != false) {
-  print "Hello, world.";
-  }
-  else { print x;
-  }
