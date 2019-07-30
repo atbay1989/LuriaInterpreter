@@ -109,6 +109,8 @@ public class Parser {
 		try {
 			if (match(VARIABLE))
 				return variableDeclaration();
+			if (match(FUNCTION))
+				return functionDeclaration();
 			return statement();
 		} catch (ParserError error) {
 			sync();
@@ -127,6 +129,21 @@ public class Parser {
 		}
 		consume(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
 		return new Statement.Variable(symbol, initialisation);
+	}
+	
+	private Statement functionDeclaration() {
+		Token symbol = consume(SIGNIFIER, "Error: Invalid function declaration");
+		consume(LEFT_PARENTHESIS, "Error: '(' expected to open arguments.");
+		List<Token> arguments = new ArrayList<>();
+		if (!check(RIGHT_PARENTHESIS)) {
+			do {
+				arguments.add(consume(SIGNIFIER, "Error: Invalid argument."));
+			} while (match(COMMA));
+		}
+		consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		consume(LEFT_BRACE, "Error: '{' expected to open block.");
+		List<Statement> functionBlock = block();
+		return new Statement.Function(symbol, arguments, functionBlock);
 	}
 	
 /*	expression() calls assignment().*/
@@ -184,29 +201,29 @@ public class Parser {
 	
 /*	comparison().*/
 	private Expression comparison() {
-		Expression e = addition();	
+		Expression e = additionSubtraction();	
 		while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
 			Token operator = previous();
-			Expression right = addition();
+			Expression right = additionSubtraction();
 			e = new Expression.Binary(e, operator, right);
 		}
 		return e;
 	}
 	
-/*	addition().*/	
-	private Expression addition() {
-		Expression e = multiplication();
+/*	additionSubtraction().*/	
+	private Expression additionSubtraction() {
+		Expression e = multiplicationDivision();
 
 		while (match(PLUS, MINUS)) {
 			Token operator = previous();
-			Expression right = multiplication();
-			e = new Expression.Binary(e, operator, right);
+			Expression rightOperand = multiplicationDivision();
+			e = new Expression.Binary(e, operator, rightOperand);
 		}
 		return e;
 	}
 
-/*	multiplication().*/
-	private Expression multiplication() {
+/*	multiplicationDivision().*/
+	private Expression multiplicationDivision() {
 		Expression e = unary();
 
 		while (match(FORWARD_SLASH, ASTERISK)) {
@@ -217,18 +234,45 @@ public class Parser {
 		return e;
 	}
 	
-/*	unary().*/	
+/*	unary() checks for the presence of '!' or '-' unary operators. If present, a Unary object consisting of the operator
+  	and operand is returned, else literal procedure is called.*/	
 	private Expression unary() {
 		if (match(EXCLAMATION, MINUS)) {
 			Token operator = previous();
-			Expression right = unary();
-			return new Expression.Unary(operator, right);
+			Expression operand = unary();
+			return new Expression.Unary(operator, operand);
 		}
-		return primary();
+		//return literal();
+		return call();
 	}
-	
-/*	primary().*/
-	private Expression primary() {
+
+/*	call().*/
+	private Expression call() {
+		Expression e = literal();
+		while (true) {
+			if (match(LEFT_PARENTHESIS)) {
+				e = endCall(e);
+			} else {
+				break;
+			}
+		}
+		return e;
+	}
+
+/*	endCall().*/
+	private Expression endCall(Expression e) {
+		List<Expression> arguments = new ArrayList<>();
+		if (!check(RIGHT_PARENTHESIS)) {
+			do {
+				arguments.add(expression());
+			} while (match(COMMA));
+		}
+		Token rightParenthesis = consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		return new Expression.Call(e, rightParenthesis, arguments);
+	}
+
+/*	literal().*/
+	private Expression literal() {
 		if (match(FALSE))
 			return new Expression.Literal(false);
 		if (match(TRUE))
@@ -262,18 +306,17 @@ public class Parser {
 	}
 
 	private Statement whileStatement() {
-	    consume(LEFT_PARENTHESIS, "Error: Expect ( after 'while'.");   
+	    consume(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");   
 	    Expression condition = expression();                      
-	    consume(RIGHT_PARENTHESIS, "Error: expect ) after condition.");
+	    consume(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
 	    Statement body = statement();
-
 	    return new Statement.While(condition, body);
 	}
 
 	private Statement ifStatement() {
-		consume(LEFT_PARENTHESIS, "Error: Expect ( after if.");
+		consume(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");
 		Expression condition = expression();
-		consume(RIGHT_PARENTHESIS, "Error: Expect ) after if condition.");
+		consume(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
 
 		Statement thenBranch = statement();
 		Statement elseBranch = null;
@@ -287,25 +330,24 @@ public class Parser {
 	// printStatement()
 	private Statement printStatement() {
 		Expression value = expression();
-		consume(SEMI_COLON, "Error: Expect ; after value.");
+		consume(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.Print(value);
 	}
 	
 	// expressionStatement() {
 	private Statement expressionStatement() {
 		Expression e = expression();
-		consume(SEMI_COLON, "Error: Expect ; after expression.");
+		consume(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.ExpressionStatement(e);
 	}
 	
 	// block()
 	private List<Statement> block() {
 		List<Statement> block = new ArrayList<>();
-		
 		while (!check(RIGHT_BRACE) && !end()) {
 			block.add(declaration());
 		}
-		consume(RIGHT_BRACE, "Error: Expected } after block.");
+		consume(RIGHT_BRACE, "Error: '}' expected to end block.");
 		return block;
 	}
 

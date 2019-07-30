@@ -8,7 +8,6 @@ import syntactic_analysis.Expression.Logical;
 import syntactic_analysis.Expression.Unary;
 import syntactic_analysis.Expression.VariableExpression;
 import syntactic_analysis.Statement.Block;
-import syntactic_analysis.Statement.Class;
 import syntactic_analysis.Statement.ExpressionStatement;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;

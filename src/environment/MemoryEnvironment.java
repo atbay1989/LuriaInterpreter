@@ -28,7 +28,7 @@ public class MemoryEnvironment {
 		if (enclosing != null) return enclosing.get(symbols);
 
 		throw new RuntimeError(symbols, "Error: Variable '" + symbols.lexeme + "' is undefined.");
-	}
+	} 
 
 	// loopup()
 	public void lookup(String symbol, Object value) {

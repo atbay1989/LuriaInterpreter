@@ -2,7 +2,9 @@ package evaluator;
 
 import static lexical_analysis.TokenType.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.w3c.dom.Text;
 
@@ -14,13 +16,13 @@ import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
+import syntactic_analysis.Expression.Call;
 import syntactic_analysis.Expression.Grouping;
 import syntactic_analysis.Expression.Literal;
 import syntactic_analysis.Expression.Logical;
 import syntactic_analysis.Expression.Unary;
 import syntactic_analysis.Expression.VariableExpression;
 import syntactic_analysis.Statement.Block;
-import syntactic_analysis.Statement.Class;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
@@ -29,7 +31,8 @@ import syntactic_analysis.Statement.While;
 
 public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor<Void> {
 
-	private MemoryEnvironment environment = new MemoryEnvironment();
+	public final MemoryEnvironment global = new MemoryEnvironment();
+	private MemoryEnvironment environment = global;
 
 	public void interpret(List<Statement> statements) {
 		try {
@@ -49,7 +52,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		s.accept(this);
 	}
 
-	private void executeBlock(List<Statement> statements, MemoryEnvironment environment) {
+	public void executeBlock(List<Statement> statements, MemoryEnvironment environment) {
 		MemoryEnvironment previous = this.environment;
 		try {
 			this.environment = environment;
@@ -219,14 +222,9 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitClassStatement(Class statement) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Void visitFunctionStatement(Function statement) {
-		// TODO Auto-generated method stub
+		function.Function function = new function.Function(statement);
+		environment.lookup(statement.symbol.lexeme, function);
 		return null;
 	}
 
@@ -251,7 +249,6 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			if (!truthy(left))
 				return left;
 		}
-
 		return evaluate(expression.right);
 	}
 
@@ -261,6 +258,17 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			execute(statement.body);
 		}
 		return null;
+	}
+
+	@Override
+	public Object visitCallExpression(Call expression) {
+		Object callee = evaluate(expression.callee);
+		List<Object> arguments = new ArrayList<>();
+		for (Expression a : expression.arguments) {
+			arguments.add(evaluate(a));
+		}
+		syntactic_analysis.Callable function = (syntactic_analysis.Callable) callee;
+		return function.call(this, arguments);
 	}
 
 }
