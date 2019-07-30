@@ -286,10 +286,10 @@ public class Parser {
 		}
 		if (match(LEFT_PARENTHESIS)) {
 			Expression e = expression();
-			consume(RIGHT_PARENTHESIS, "Error: Expect ')' after expression.");
+			consume(RIGHT_PARENTHESIS, "Error: Expecting ')' after expression.");
 			return new Expression.Grouping(e);
 		}
-		throw error(peek(), "Error: expect expression.");
+		throw error(peek(), "Error: expecting expression.");
 	}
 	
 	// statement()
@@ -300,9 +300,21 @@ public class Parser {
 			return whileStatement();
 		if (match(PRINT))
 			return printStatement();
+		if (match(RETURN))
+			return returnStatement();
 		if (match(LEFT_BRACE))
 			return new Statement.Block(block());
 		return expressionStatement();
+	}
+
+	private Statement returnStatement() {
+		Token symbol = previous();
+		Expression value = null;
+		if (!check(SEMI_COLON)) {
+			value = expression();
+		}
+		consume(SEMI_COLON, "Error: expecting ';' after return expression.");
+		return new Statement.Return(symbol, value);
 	}
 
 	private Statement whileStatement() {

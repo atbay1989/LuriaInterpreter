@@ -4,6 +4,7 @@ import java.util.List;
 
 import environment.MemoryEnvironment;
 import evaluator.Interpreter;
+import statement.Return;
 import syntactic_analysis.Callable;
 import syntactic_analysis.Statement;
 
@@ -19,6 +20,11 @@ public class Function implements Callable {
 		MemoryEnvironment environment = new MemoryEnvironment(interpreter.global);
 		for (int i = 0; i < declaration.arguments.size(); i++) {
 			environment.lookup(declaration.arguments.get(i).lexeme, arguments.get(i));
+		}
+		try {
+			interpreter.executeBlock(declaration.functionBlock, environment);
+		} catch (Return returnValue) {
+			return returnValue.value;
 		}
 		interpreter.executeBlock(declaration.functionBlock, environment);
 		return null;
