@@ -48,6 +48,18 @@ Boolean logic is supported in Luria. and is expressed and unary operator ! repre
     x and y; // false
     x or y; // true
 
+If then else conditions are written:
+
+    variable x = true;
+    variable y = true;
+        if (x) print "current";
+    else print "affairs" // current
+
+The 'dangling else' problem is handled by the convention that the else is associated with the if that immediately precedes it:
+
+    if (x) if (y) print "current"
+        else print "affairs" // current
+
 To declare a function:
 
     function square(x) {
