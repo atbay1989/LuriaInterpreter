@@ -251,7 +251,6 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			if (!truthy(left))
 				return left;
 		}
-
 		return evaluate(expression.right);
 	}
 
