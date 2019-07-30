@@ -18,33 +18,35 @@ Luria supports the elementary arithmetic operators addition, subtraction, multip
 
 Valid expressions include:
 
-    1 + 1;
-    1 - 1;
-    2 * 2;
-    3 / 2;
-    0 / 2;
+    1 + 1; // 2
+    1 - 1; // 0
+    2 * 2; // 4
+    3 / 2; // 1.5
+    0 / 2; // 0
 
 The addition operator can also be applied to strings:
 
     variable x = "Hello, ";
     variable y = "world!";
-    print x + y;
+    print x + y; // Hello, world!
 
 Unary operators permit the expression of negative numbers and their binary operations are handled correctly:
 
-    -1 + 1;
-    -1 + -1;
-    -1 - -1;
-    -2 * -2;
-    2 / -2;
+    -1 + 1; // 0
+    -1 + -1; // -2
+    -1 - -1; // 2
+    -2 * -2; // 4
+    2 / -2; // -1
 
 Boolean logic is supported in Luria. and is expressed and unary operator ! represents NOT:
 
-    variable x = true;
-    variable y = false;
-    !x;
-    x == y;
-    x != y;
+    variable x = true
+    variable y = false
+    !x; // false
+    x == y; // true
+    x != y; // false
+    x and y; // false
+    x or y; // true
 
 To declare a function:
 
