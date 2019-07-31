@@ -4,7 +4,7 @@ ProjectLuria is an implementation of an interpreter in Java for a simple, impera
 ---
 
 ## Luria
-Luria is a simple, imperative high-level language. It's syntax is C-like, with the exception that it is dynamically typed and (as of yet) cannot read and interpret user input, among many other functionalities.
+Luria is a simple, imperative high-level language. It's syntax is C-like, with the exception that it is dynamically typed and (as of yet) cannot read and interpret user input, among other functionalities.
 
 NB: Like C, a single-line character sequence prefixed with **//** is interpreted as a comment:
 
@@ -97,8 +97,7 @@ Luria also permits the grouping of expressions using parentheses:
 
 ---
 
-### Comparison & Equality Operations & Control Flow
-#### Comparison & Equality Operations
+### Comparison & Equality Operations
 Boolean logic is supported in Luria. **true** and **false** values can be assigned to variables. Boolean values can also be derived from comparison operations:
 
     1 < 2; // true
@@ -116,9 +115,19 @@ Also available are logical operators **!**, **and**, and **or**. If an operand i
 
 **and** and **or** are eqivilants to **&&** and **||** in C and determine whether two values or expressions are both true or if either values or expressions are true, respectively.
 
+---
+### Lexical Scope & Control Flow
 #### Lexical Scope
+Lexical scope is expressed by the encapsulation of statements between left and right braces, **{*** and **}**, forming block statements. Not only does this allow for the declaration and access of variables at different levels of scope, but aid the construction of control flow statements and are essential to the definition of functions:
 
-
+    variable a = "global";
+    {
+        variable a = "block";
+        print a;
+    }
+    print a;
+    // prints block followed by global on a new line
+    
 #### Control Flow
 Control flow is made possible with the available if... else and loop type statements. Both constructs involve evaluation of logical expressions, i.e. conditions. Examples of **if** and **if... else** in Luria are:
 
@@ -161,10 +170,26 @@ A function can then be called:
 
     square(4); // 16
 
-Integral, but not essential to functions in Luria are **return** statements, which allow for the return of a value from a function. Functions can therefore act as operands in expressions:
+Integral, but not essential to functions in Luria are **return** statements, which allow for the return of a value from a function. Functions can therefore act as operands in expressions.
 
-        variable pi = 3.1415926535;
-        variable area = pi * square(3);
-        print area; // 28.2743338815
+    function square(x) {
+        return x * x;
+    }
+    variable pi = 3.1415926535;
+    variable area = pi * square(3);
+    print area; // 28.2743338815
         
+In this way, functions in Luria are *first class* and can be passed as arguments to other functions:
+
+    function square(x) {
+        return x * x;
+    }
+    variable pi = 3.1415926535;
+    function areaOfACircle(n) {
+        return pi * n;
+    }
+    print areaOfACircle(square(3)); // 28.2743338815
+        
+NB: A function call containing a print statement with execute print twice. It is presumed that there exists two executed statements: first the print statement existing within the function and the statement that calls the function.
+
 ---
