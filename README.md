@@ -1,21 +1,21 @@
 # ProjectLuria
-ProjectLuria is an implementation of an interpreter in Java for a simple high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
+ProjectLuria is an implementation of an interpreter in Java for a simple, imperative high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
 
 ---
 
 ## Luria
 Luria is a simple, imperative high-level language. It's syntax is C-like, with the exception that it is dynamically typed and (as of yet) cannot read and interpret user input, among many other functionalities.
 
-NB: Like C, a single-line character sequence prefixed with // is interpreted as a comment:
+NB: Like C, a single-line character sequence prefixed with **//** is interpreted as a comment:
 
-    // this is a comment
+    // this is a comment in Luria
 
 ---
 
 ### Data Types & Variables
-Variables, declared using the "variable" keyword, can represent a number (e.g. 1, 1.0, -1), a string (e.g. "0", "hello", "0world"), a boolean (i.e. true, false), or null, a value representing the absence of a value. When declared with no value assigned, a variable defaults to null.
+Variables, declared using the "variable" keyword, can represent a number (e.g. **1**, **1.0**, **-1**), a string (e.g. **"0"**, **"hello"**, **"0world"**), a boolean (i.e. **true**, **false**), or **null**, a value representing the absence of a value. When declared with no value assigned, a variable defaults to **null**.
 
-Numbers are handled by the interpreter as doubles; numbers ending ".0" are truncated upon their printing, e.g. "1.0" becomes "1".
+Numbers are handled by the interpreter as doubles; numbers ending **".0"** are truncated upon their printing, e.g. **"1.0"** becomes **"1"**.
 
 In valid Luria syntax we can declare variables as follows:
 
@@ -34,7 +34,7 @@ Variables declared can be operated upon as the values assigned and can also be r
 
 ### Statements & Expressions
 #### Statements
-Statements are syntactic units in Luria that express a command to carry out an action. In Luria, the is no distinction between statements and declarations. Every statement must end with a semi-colon. Luria supports the following statements:
+Statements are syntactic units in Luria that express a command to carry out an action. In Luria, the is no distinction between statements and declarations. Every statement must end with a semi-colon, **";"**. Luria supports the following types of statements:
     
     1 + 1; // an expression statement
     
@@ -77,13 +77,15 @@ The addition operator can also be applied to strings:
     print x + y; // Hello, world!
 
 ##### Unary Operations
-Unary operators permit the expression of negative numbers and their binary operations are handled correctly. The minus symbol can be interpreted *prefix* to negate a number and *infix* to form a subtraction expression.
+Unary operators permit the expression of negative numbers and their binary operations are handled correctly. The minus symbol (**"-"**) can be interpreted *prefix* to negate a number and *infix* to form a subtraction expression.
 
     -1 + 1; // 0
     -1 + -1; // -2
     -1 - -1; // 2
     -2 * -2; // 4
     2 / -2; // -1
+
+**"!"** can also be used to negate...
 
 #### Precedence
 The conventional order of operations is followed, whereby multiplication and division precede addition and subtraction. Thus:
@@ -133,21 +135,3 @@ To declare a function:
 A function can then be called:
 
     print square(x);
-
-Luria allows for:
-#### identifiers
-Their associated token is SIGNIFIER and can consist of an alphanumeric sequence of characters, except they cannot begin with a numerical digit, e.g. '0variableName'. An example of an identifier is 'x', e.g. 'variable x;' or 'variable x = 0;'.
-#### reserved words
-Each reserved word or keyword in Luria is mapped to an associated String and token, and is responsible for representing specific Luria functionalities, e.g. the sequence 'and' is mapped to an AND token with the functionality of '&&' in Java, for example. The reserved keywords in Luria are:
-##### one char tokens
-'('   ')'   '{'   '}'   ','   '.'   '-'   '+'   ';'   '/'   '*'
-##### one or many char tokens
-'!'   '='   '>'   '<'   '!='   '=='   '<='   '>='
-##### reserved words
-'and'
-'or'
-'variable'
-'if'
-'else'
-'while'
-'function'
