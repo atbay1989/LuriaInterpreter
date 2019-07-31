@@ -14,10 +14,12 @@ import luria.Luria;
 import syntactic_analysis.Expression;
 import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
+import syntactic_analysis.Expression.Array;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
 import syntactic_analysis.Expression.Call;
 import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Index;
 import syntactic_analysis.Expression.Literal;
 import syntactic_analysis.Expression.Logical;
 import syntactic_analysis.Expression.Unary;
@@ -27,7 +29,7 @@ import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
 import syntactic_analysis.Statement.Return;
-import syntactic_analysis.Statement.Variable;
+import syntactic_analysis.Statement.VariableDeclaration;
 import syntactic_analysis.Statement.While;
 
 public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor<Void> {
@@ -194,7 +196,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitVariableStatement(Variable statement) {
+	public Void visitVariableDeclarationStatement(VariableDeclaration statement) {
 		Object value = null;
 		if (statement.initialisation != null) {
 			value = evaluate(statement.initialisation);
@@ -278,6 +280,35 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		if (statement.value != null)
 			value = evaluate(statement.value);
 		throw new statement.Return(value);
+	}
+
+	@Override
+	public Object visitArrayExpression(Array expression) {
+        List<Object> components = new ArrayList<>();
+        if (expression.components != null) {
+            for (Expression component : expression.components) {
+            	components.add(evaluate(component));
+            }
+        }
+        return components;
+	}
+
+	@Override
+	public Object visitIndexExpression(Index expression) {
+        Object object = evaluate(expression.object);
+        if (!(object instanceof List)) {
+            throw new RuntimeError(expression.symbol, "Error: array expected.");
+        }
+        List array = (List)object;
+        Object objectIndex = evaluate(expression.index);
+        if (!(objectIndex instanceof Double)) {
+            throw new RuntimeError(expression.symbol, "Error: integer expected.");
+        }
+        int index = ((Double) objectIndex).intValue();
+        if (index >= array.size()) {
+            throw new RuntimeError(expression.symbol, "Error: index is beyond array range.");
+        }
+        return array.get(index);
 	}
 
 }
