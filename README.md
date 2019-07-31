@@ -34,7 +34,7 @@ Variables declared can be operated upon as the values assigned and can also be r
 
 ### Statements & Expressions
 #### Statements
-Statements are syntactic units in Luria that express a command to carry out an action. In Luria, the is no distinction between statements and declarations. Every statement must end with a semi-colon, **";"**. Luria supports the following types of statements:
+Statements are syntactic units that express a command to carry out an action. In Luria, the is no distinction between statements and declarations. Like C, every statement in Luria must end with a semi-colon, **;**, else an error is thrown at runtime. Luria supports the following statements:
     
     1 + 1; // an expression statement
     
@@ -43,24 +43,24 @@ Statements are syntactic units in Luria that express a command to carry out an a
     print pi * (3 * 3); // a print statement
     
     if (pi == 3.1415926535) print "true"; else print "false"; // an if (and           
-    associated) then else statement
+    // associated) then else statement
     
     while (true) print "infinite loop" // a while statement with a condition in       
-    parentheses, followed by its (single) command
+    // parentheses, followed by its (single) command
     
     { print "increment"; x = x + 1; } // a block statement, delineating areas of       
-    scope and permitting association of a series of statements, for example, to a     
-    while command.
+    // lexical scope and permitting association of a series of statements, for            
+    // example, to a while command.
     
     function square(x) { print x * x; } // a function declaration, featuring its       
-    signifier ("square"), argument(s) ("(x)"), and function block.
+    // signifier ("square"), argument(s) ("(x)"), and function block.
     
     return x * x; // a return statement, permitting a function to return a value,     
-    rather than exist only as a sub-routine.
+    // rather than exist only as a sub-routine.
     
 #### Arithmetic Expressions
 ##### Binary Operations
-Luria supports the elementary arithmetic operators addition, subtraction, multiplication, and division; modulo is not yet supported. These binary operators are applied in *infix* notation. 
+Luria supplies the elementary arithmetic operators addition, subtraction, multiplication, and division; modulo is not yet supported. These binary operators are expressed in *infix* notation. 
 
 Valid expressions include:
 
@@ -70,22 +70,20 @@ Valid expressions include:
     3 / 2; // 1.5
     0 / 2; // 0
 
-The addition operator can also be applied to strings:
+NB: The addition operator can also be applied to strings:
 
     variable x = "Hello, ";
     variable y = "world!";
     print x + y; // Hello, world!
 
 ##### Unary Operations
-Unary operators permit the expression of negative numbers and their binary operations are handled correctly. The minus symbol (**"-"**) can be interpreted *prefix* to negate a number and *infix* to form a subtraction expression.
+Unary operators permit the expression of negative numbers and their binary operations are handled correctly. The minus symbol (**-**) can be interpreted *prefix* to negate a number and *infix* to form a subtraction expression.
 
     -1 + 1; // 0
     -1 + -1; // -2
     -1 - -1; // 2
     -2 * -2; // 4
     2 / -2; // -1
-
-**"!"** can also be used to negate...
 
 #### Precedence
 The conventional order of operations is followed, whereby multiplication and division precede addition and subtraction. Thus:
@@ -97,41 +95,76 @@ Luria also permits the grouping of expressions using parentheses:
     12 / 6 - 2; // 0
     12 / (6 - 2); // 3
 
-#### Logical Operations
-Boolean logic is supported in Luria. and is expressed and unary operator ! represents NOT:
-
-    variable x = true
-    variable y = false
-    !x; // false
-    x == y; // true
-    x != y; // false
-    x and y; // false
-    x or y; // true
-    
 ---
 
-### Control Flow
-If then else conditions are written:
+### Comparison & Equality Operations & Control Flow
+#### Comparison & Equality Operations
+Boolean logic is supported in Luria. **true** and **false** values can be assigned to variables. Boolean values can also be derived from comparison operations:
+
+    1 < 2; // true
+    2 > 1; // true
+    1 >= 2; // false
+    2 <= 1; // false
+    1 == 2; // false
+    1 != 2; // true
+
+#### Logical Operations
+Also available are logical operators **!**, **and**, and **or**. If an operand is true, **!**, i.e. not, returns a false value and vice versa.
 
     variable x = true;
-    variable y = true;
-        if (x) print "current";
-    else print "affairs" // current
+    !x; // false
 
-The 'dangling else' problem is handled by the convention that the else is associated with the if that immediately precedes it:
+**and** and **or** are eqivilants to **&&** and **||** in C and determine whether two values or expressions are both true or if either values or expressions are true, respectively.
 
-    if (x) if (y) print "current"
-        else print "affairs" // current
+#### Lexical Scope
+
+
+#### Control Flow
+Control flow is made possible with the available if... else and loop type statements. Both constructs involve evaluation of logical expressions, i.e. conditions. Examples of **if** and **if... else** in Luria are:
+
+    if ("a" != "b") print "current"; // current
+    
+    if ("a" != "a") print "current";
+        else print "affairs"; // affairs
+
+The 'dangling else' problem is handled by the convention that **else** is associated with the **if** that immediately precedes it:
+
+    if (true) if (false) print "current";
+        else print "affairs"; // affairs
+        
+This construct can also be represented using braces, affording lexical scope and greater readability:
+
+    if (true) {
+        if (false) {
+            print "current";
+        } else {
+            print "affairs"; // affairs
+        
+Looping is achieved using **while**. Like **if**, **while** requires a condition to evaluate and can be expressed without braces (to execute a single command) or with braces (to execute one or many statements). The following is implementation of a for type loop in Luria using **while**:
+
+    variable i = 0;
+    while (i <= 10) {
+        print i;
+        i = i + 1;
+    } // returns numbers 1 to 10 each on a new line
 
 ---
 
 ### Functions
-To declare a function:
+Functions are declared in Luria using the keyword **function** followed by a function signifier, its argument(s) expressed as variable signfier(s) in parentheses, followed by the function block. For example: 
 
     function square(x) {
-        return x * x;
+        print x * x;
     }
 
 A function can then be called:
 
-    print square(x);
+    square(4); // 16
+
+Integral, but not essential to functions in Luria are **return** statements, which allow for the return of a value from a function. Functions can therefore act as operands in expressions:
+
+        variable pi = 3.1415926535;
+        variable area = pi * square(3);
+        print area; // 28.2743338815
+        
+---
