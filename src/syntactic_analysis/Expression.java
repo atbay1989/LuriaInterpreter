@@ -15,9 +15,49 @@ public abstract class Expression {
 		T visitLogicalExpression(Logical expression);
 	    T visitVariableExpression(VariableExpression expression);
 		T visitCallExpression(Call expression);
+		T visitArrayExpression(Array expression);
+		T visitIndexExpression(Index expression);
+		
+	}
+	
+	public static class Index extends Expression {
+		// Fields.
+		public final Expression object;
+		public final Token symbol;
+		public final Expression index;
+		
+		// Constructor.
+		public Index(Expression object, Token symbol, Expression index) {
+			this.object = object;
+			this.symbol = symbol;
+			this.index = index;
+		}
+
+		// Visitor.
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitIndexExpression(this);
+		}
 		
 	}
 
+	public static class Array extends Expression {
+		// Fields.
+		public final List<Expression> components;
+
+		// Constructor.
+		public Array(List<Expression> components) {
+			this.components = components;
+		}
+
+		// Visitor.
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitArrayExpression(this);
+		}
+		
+	}
+	
 	public static class Assignment extends Expression {
 		// field
 		public final Token symbol;

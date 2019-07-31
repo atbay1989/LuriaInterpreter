@@ -3,10 +3,12 @@ package visitor;
 import lexical_analysis.Token;
 import lexical_analysis.TokenType;
 import syntactic_analysis.Expression;
+import syntactic_analysis.Expression.Array;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
 import syntactic_analysis.Expression.Call;
 import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Index;
 import syntactic_analysis.Expression.Literal;
 import syntactic_analysis.Expression.Logical;
 import syntactic_analysis.Expression.Unary;
@@ -83,6 +85,18 @@ public class PrettyPrinter implements Expression.Visitor<String> {
 
 	@Override
 	public String visitCallExpression(Call expression) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitArrayExpression(Array expression) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String visitIndexExpression(Index expression) {
 		// TODO Auto-generated method stub
 		return null;
 	}

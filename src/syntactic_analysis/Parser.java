@@ -128,7 +128,7 @@ public class Parser {
 			initialisation = expression();
 		}
 		consume(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
-		return new Statement.Variable(symbol, initialisation);
+		return new Statement.VariableDeclaration(symbol, initialisation);
 	}
 	
 	private Statement functionDeclaration() {
@@ -249,16 +249,21 @@ public class Parser {
 /*	call().*/
 	private Expression call() {
 		Expression e = literal();
+		Token previous = previous();
 		while (true) {
 			if (match(LEFT_PARENTHESIS)) {
 				e = endCall(e);
+			} else if (match(LEFT_BRACKET)) {
+				Expression index = literal();
+				Token rightBracket = consume(RIGHT_BRACKET, "Error: expected ']' after index.");
+				e = new Expression.Index(e, previous, index);
 			} else {
 				break;
 			}
 		}
 		return e;
 	}
-
+	
 /*	endCall().*/
 	private Expression endCall(Expression e) {
 		List<Expression> arguments = new ArrayList<>();
@@ -271,7 +276,7 @@ public class Parser {
 		return new Expression.Call(e, rightParenthesis, arguments);
 	}
 
-/*	literal().*/
+	/* literal(). */
 	private Expression literal() {
 		if (match(FALSE))
 			return new Expression.Literal(false);
@@ -289,7 +294,21 @@ public class Parser {
 			consume(RIGHT_PARENTHESIS, "Error: Expecting ')' after expression.");
 			return new Expression.Grouping(e);
 		}
-		throw error(peek(), "Error: expecting expression.");
+		if (match(LEFT_BRACKET)) {
+			List<Expression> components = new ArrayList<>();
+			if (match(RIGHT_BRACKET)) {
+				return new Expression.Array(null);
+			}
+			if (!match(RIGHT_BRACKET)) {
+				do {
+					Expression component = assignment();
+					components.add(component);
+				} while (match(COMMA));
+			}
+			consume(RIGHT_BRACKET, "Error: ']' expected to close array declaration.");
+			return new Expression.Array(components);
+		}
+		throw error(peek(), "Error: expression expected.");
 	}
 	
 	// statement()

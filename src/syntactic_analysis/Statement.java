@@ -10,7 +10,7 @@ public abstract class Statement {
 	public interface Visitor<T> {
 		T visitExpressionStatement(ExpressionStatement statement);
 		T visitPrintStatement(Print statement);
-		T visitVariableStatement(Variable statement);
+		T visitVariableDeclarationStatement(VariableDeclaration statement);
 		T visitBlockStatement(Block statement);
 		T visitFunctionStatement(Function statement);
 		T visitIfStatement(If statement);
@@ -132,18 +132,18 @@ public abstract class Statement {
 
 	}
 	
-	public static class Variable extends Statement {
+	public static class VariableDeclaration extends Statement {
 
 		public final Token symbol;
 		public final Expression initialisation;
 
-		Variable(Token symbol, Expression initialisation) {
+		VariableDeclaration(Token symbol, Expression initialisation) {
 			this.symbol = symbol;
 			this.initialisation = initialisation;
 		}
 
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visitVariableStatement(this);
+			return visitor.visitVariableDeclarationStatement(this);
 		}
 
 	}

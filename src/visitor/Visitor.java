@@ -12,14 +12,14 @@ import syntactic_analysis.Statement.ExpressionStatement;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
-import syntactic_analysis.Statement.Variable;
+import syntactic_analysis.Statement.VariableDeclaration;
 import syntactic_analysis.Statement.While;
 
 public interface Visitor<T> {
 	// statements
 	T visitExpressionStatement(ExpressionStatement statement);
 	T visitPrintStatement(Print statement);
-	T visitVariableStatement(Variable statement);
+	T visitVariableStatement(VariableDeclaration statement);
 	T visitBlockStatement(Block statement);
 	T visitClassStatement(Class statement);
 	T visitFunctionStatement(Function statement);
