@@ -226,7 +226,7 @@ public class Parser {
 	private Expression multiplicationDivision() {
 		Expression e = unary();
 
-		while (match(FORWARD_SLASH, ASTERISK)) {
+		while (match(FORWARD_SLASH, ASTERISK, MODULO, EXPONENT)) {
 			Token operator = previous();
 			Expression rightOperand = unary();
 			e = new Expression.Binary(e, operator, rightOperand);
@@ -249,14 +249,15 @@ public class Parser {
 /*	call().*/
 	private Expression call() {
 		Expression e = literal();
-		Token previous = previous();
+		Token symbol = previous();
 		while (true) {
 			if (match(LEFT_PARENTHESIS)) {
 				e = endCall(e);
 			} else if (match(LEFT_BRACKET)) {
-				Expression index = literal();
+				Expression array = literal();
+				// Error checking? Consuming ']'.
 				Token rightBracket = consume(RIGHT_BRACKET, "Error: expected ']' after index.");
-				e = new Expression.Index(e, previous, index);
+				e = new Expression.Index(e, symbol, array);
 			} else {
 				break;
 			}
@@ -321,9 +322,17 @@ public class Parser {
 			return printStatement();
 		if (match(RETURN))
 			return returnStatement();
+		if (match(READ))
+			return readStatement();
 		if (match(LEFT_BRACE))
 			return new Statement.Block(block());
 		return expressionStatement();
+	}
+
+	private Statement readStatement() {
+		Expression value = expression();
+		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		return new Statement.Read(value);
 	}
 
 	private Statement returnStatement() {

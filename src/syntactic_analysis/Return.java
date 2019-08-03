@@ -1,4 +1,4 @@
-package statement;
+package syntactic_analysis;
 
 public class Return extends RuntimeException {
 	public final Object value;

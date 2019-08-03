@@ -33,16 +33,16 @@ public class Lexer {
 		reservedSequence.put("and", AND);
 		reservedSequence.put("else", ELSE);
 		reservedSequence.put("false", FALSE);
-		reservedSequence.put("true", TRUE);
 		reservedSequence.put("for", FOR);
 		reservedSequence.put("function", FUNCTION);
 		reservedSequence.put("if", IF);
 		reservedSequence.put("null", NULL);
 		reservedSequence.put("or", OR);
 		reservedSequence.put("print", PRINT);
+		reservedSequence.put("read", READ);
 		reservedSequence.put("return", RETURN);
-		reservedSequence.put("super", SUPER);
 		reservedSequence.put("this", THIS);
+		reservedSequence.put("true", TRUE);
 		reservedSequence.put("variable", VARIABLE);
 		reservedSequence.put("while", WHILE);
 	}
@@ -161,6 +161,10 @@ public class Lexer {
 		case ';': addToken(SEMI_COLON);
 			break;
 		case '*': addToken(ASTERISK);
+			break;
+		case '%': addToken(MODULO);
+			break;
+		case '^': addToken(EXPONENT);
 			break;
 		// one or many character token
 		case '!': addToken(manyChar('=') ? EXCLAMATION_EQUAL : EXCLAMATION);

@@ -1,16 +1,14 @@
-package evaluator;
+package interpretation;
 
 import static lexical_analysis.TokenType.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
+import java.util.Scanner;
 
-import org.w3c.dom.Text;
-
-import environment.MemoryEnvironment;
 import lexical_analysis.Token;
 import luria.Luria;
+import memory_environment.MemoryEnvironment;
 import syntactic_analysis.Expression;
 import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
@@ -28,6 +26,7 @@ import syntactic_analysis.Statement.Block;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
+import syntactic_analysis.Statement.Read;
 import syntactic_analysis.Statement.Return;
 import syntactic_analysis.Statement.VariableDeclaration;
 import syntactic_analysis.Statement.While;
@@ -135,6 +134,12 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		case ASTERISK:
 			checkOperands(e.operator, left, right);
 			return (double) left * (double) right;
+		case MODULO:
+			checkOperands(e.operator, left, right);
+			return (double) left % (double) right;
+		case EXPONENT:
+			checkOperands(e.operator, left, right);
+			return Math.pow((double) left, (double) right);
 		// comparison operators
 		case GREATER:
 			checkOperands(e.operator, left, right);
@@ -189,13 +194,6 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitPrintStatement(Print statement) {
-		Object value = evaluate(statement.expression);
-		System.out.println(stringify(value));
-		return null;
-	}
-
-	@Override
 	public Void visitVariableDeclarationStatement(VariableDeclaration statement) {
 		Object value = null;
 		if (statement.initialisation != null) {
@@ -206,19 +204,6 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Object visitVariableExpression(VariableExpression expression) {
-		return environment.get(expression.symbol);
-	}
-
-	@Override
-	public Object visitAssignmentExpression(Assignment expression) {
-		Object value = evaluate(expression.value);
-
-		environment.store(expression.symbol, value);
-		return value;
-	}
-
-	@Override
 	public Void visitBlockStatement(Block statement) {
 		executeBlock(statement.statements, new MemoryEnvironment(environment));
 		return null;
@@ -226,7 +211,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 
 	@Override
 	public Void visitFunctionStatement(Function statement) {
-		function.Function function = new function.Function(statement);
+		syntactic_analysis.Function function = new syntactic_analysis.Function(statement);
 		environment.lookup(statement.symbol.lexeme, function);
 		return null;
 	}
@@ -279,7 +264,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		Object value = null;
 		if (statement.value != null)
 			value = evaluate(statement.value);
-		throw new statement.Return(value);
+		throw new syntactic_analysis.Return(value);
 	}
 
 	@Override
@@ -309,6 +294,35 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
             throw new RuntimeError(expression.symbol, "Error: index is beyond array range.");
         }
         return array.get(index);
+	}
+	
+	@Override
+	public Object visitVariableExpression(VariableExpression expression) {
+		return environment.get(expression.symbol);
+	}
+
+	@Override
+	public Object visitAssignmentExpression(Assignment expression) {
+		Object value = evaluate(expression.value);
+		environment.store(expression.symbol, value);
+		return value;
+	}
+	
+	@Override
+	public Void visitPrintStatement(Print statement) {
+		Object value = evaluate(statement.expression);
+		System.out.println(stringify(value));
+		return null;
+	}
+
+	@Override
+	public Void visitReadStatement(Read statement) {
+		Scanner s = new Scanner(System.in);
+		double input = s.nextDouble();
+		Object value = evaluate(new Expression.Literal(input));
+		Token t = ((Expression.VariableExpression) statement.expression).symbol;
+		environment.store(t, value);
+		return null;
 	}
 
 }
