@@ -9,8 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-// Luria imports
-import evaluator.Interpreter;
+import interpretation.Interpreter;
 import lexical_analysis.Lexer;
 import lexical_analysis.Token;
 import lexical_analysis.TokenType;
@@ -25,17 +24,14 @@ public class Luria {
 	static boolean runtimeError = false;
 
 	// test path; hack to reach runFile
-	private static final String PATH = "src\\testsuite\\test.txt";
+	private static final String PATH = "src\\testsuite\\read.txt";
 
 	// main
 	public static void main(String[] args) throws IOException {
-		readFile(PATH);
-		/*
-		 * if (args.length > 1) { System.out.println("Usage: Luria [script]");
-		 * System.exit(666); } else if (args.length == 1) { runFile(args[0]); } else {
-		 * runPrompt(); }
-		 */
-		//runPrompt();
+		//readFile(PATH);
+		  if (args.length > 1) { System.out.println("Usage: Luria [script]");
+		  System.exit(666); } else if (args.length == 1) { readFile(args[0]); } else {
+		  runPrompt(); }
 	}
 
 	// read and execute file from file path

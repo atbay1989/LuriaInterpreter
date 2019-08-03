@@ -2,7 +2,7 @@ package syntactic_analysis;
 
 import java.util.List;
 
-import evaluator.Interpreter;
+import interpretation.Interpreter;
 import lexical_analysis.Token;
 
 public abstract class Statement {
@@ -16,6 +16,22 @@ public abstract class Statement {
 		T visitIfStatement(If statement);
 		T visitWhileStatement(While statement);
 		T visitReturnStatement(Return statement);
+		T visitReadStatement(Read statement);
+		
+	}
+	
+	public static class Read extends Statement {
+		
+		public final Expression expression;
+		
+		Read(Expression e) {
+			this.expression = e;
+		}
+		
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitReadStatement(this);
+		}
 		
 	}
 

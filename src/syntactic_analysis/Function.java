@@ -1,12 +1,9 @@
-package function;
+package syntactic_analysis;
 
 import java.util.List;
 
-import environment.MemoryEnvironment;
-import evaluator.Interpreter;
-import statement.Return;
-import syntactic_analysis.Callable;
-import syntactic_analysis.Statement;
+import interpretation.Interpreter;
+import memory_environment.MemoryEnvironment;
 
 public class Function implements Callable {
 	private final Statement.Function declaration;

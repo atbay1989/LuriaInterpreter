@@ -1,55 +1,56 @@
 package lexical_analysis;
 
 public enum TokenType {
-	// one character token
-	LEFT_PARENTHESIS,
-	RIGHT_PARENTHESIS,
-	LEFT_BRACE,
-	RIGHT_BRACE,
-	LEFT_BRACKET,
-	RIGHT_BRACKET,
-	COMMA,
-	FULL_STOP,
-	MINUS,
-	PLUS,
-	SEMI_COLON,
-	FORWARD_SLASH,
+/*	One character tokens.*/
 	ASTERISK,
+	COMMA,
+	EXPONENT,
+	FORWARD_SLASH,
+	FULL_STOP,
+	LEFT_BRACE,
+	LEFT_BRACKET,
+	LEFT_PARENTHESIS,
+	MINUS,
+	MODULO,
+	PLUS,
+	RIGHT_PARENTHESIS,
+	RIGHT_BRACE,
+	RIGHT_BRACKET,
+	SEMI_COLON,
 	
-	// one or many character token
-	EXCLAMATION,
+/*	One or many character tokens.*/
 	EQUAL,
-	GREATER,
-	LESS,
-	EXCLAMATION_EQUAL,
 	EQUAL_EQUAL,
+	EXCLAMATION,
+	EXCLAMATION_EQUAL,
+	GREATER,
 	GREATER_EQUAL,
+	LESS,
 	LESS_EQUAL,
 	
-	// literal
+/*	Literal tokens.*/
+	NUMBER,
 	SIGNIFIER,
 	STRING,
-	NUMBER,
 	
-	// keyword
+/*	Reserved word tokens.*/
 	AND,
-	CLASS,
 	ELSE,
 	FALSE,
-	FUNCTION,
 	FOR,
+	FUNCTION,
 	IF,
 	NULL,
 	OR,
 	PRINT,
+	READ,
 	RETURN,
-	SUPER,
 	THIS,
 	TRUE,
 	VARIABLE,
 	WHILE,
 	
-	// end of file
+/*	End of file token.*/
 	EOF
 	
 }
