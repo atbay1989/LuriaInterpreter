@@ -26,7 +26,9 @@ import syntactic_analysis.Statement.Block;
 import syntactic_analysis.Statement.Function;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
-import syntactic_analysis.Statement.Read;
+import syntactic_analysis.Statement.ReadBoolean;
+import syntactic_analysis.Statement.ReadNumber;
+import syntactic_analysis.Statement.ReadString;
 import syntactic_analysis.Statement.Return;
 import syntactic_analysis.Statement.VariableDeclaration;
 import syntactic_analysis.Statement.While;
@@ -316,12 +318,44 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitReadStatement(Read statement) {
+	public Void visitReadStringStatement(ReadString statement) {
+		Scanner s = new Scanner(System.in);
+		String input = s.nextLine();
+		Object value = evaluate(new Expression.Literal(input));
+		Token t = ((Expression.VariableExpression) statement.expression).symbol;
+		environment.store(t, value);
+		return null;
+	}
+
+	@Override
+	public Void visitReadNumberStatement(ReadNumber statement) {
 		Scanner s = new Scanner(System.in);
 		double input = s.nextDouble();
 		Object value = evaluate(new Expression.Literal(input));
 		Token t = ((Expression.VariableExpression) statement.expression).symbol;
 		environment.store(t, value);
+		return null;
+	}
+
+	@Override
+	public Void visitReadBooleanStatement(ReadBoolean statement) {
+		Token t = ((Expression.VariableExpression) statement.expression).symbol;
+		Scanner s = new Scanner(System.in);
+		while (true) {
+			String input = s.nextLine();
+			if (input.equals("true")) {
+				Object value = evaluate(new Expression.Literal(input));
+				environment.store(t, value);
+				break;
+			} else if (input.equals("false")) {
+				Object value = evaluate(new Expression.Literal(input));
+				environment.store(t, value);
+				break;
+			} else {
+				throw new RuntimeError(t, "Boolean value expected.");
+			}
+		}
+
 		return null;
 	}
 

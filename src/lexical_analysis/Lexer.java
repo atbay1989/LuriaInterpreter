@@ -30,7 +30,7 @@ public class Lexer {
 	// construction of reservedSequence Map
 	static {
 		reservedSequence = new HashMap<>();
-		reservedSequence.put("and", AND);
+		reservedSequence.put("&&", AND);
 		reservedSequence.put("else", ELSE);
 		reservedSequence.put("false", FALSE);
 		reservedSequence.put("for", FOR);
@@ -39,12 +39,15 @@ public class Lexer {
 		reservedSequence.put("null", NULL);
 		reservedSequence.put("or", OR);
 		reservedSequence.put("print", PRINT);
-		reservedSequence.put("read", READ);
+		reservedSequence.put("readboolean", READ_BOOLEAN);
+		reservedSequence.put("readnumber", READ_NUMBER);
+		reservedSequence.put("readstring", READ_STRING);
 		reservedSequence.put("return", RETURN);
 		reservedSequence.put("this", THIS);
 		reservedSequence.put("true", TRUE);
 		reservedSequence.put("variable", VARIABLE);
 		reservedSequence.put("while", WHILE);
+		
 	}
 
 	// constructor

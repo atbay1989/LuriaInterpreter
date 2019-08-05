@@ -23,14 +23,9 @@ public class Luria {
 	static boolean error = false;
 	static boolean runtimeError = false;
 
-	// test path; hack to reach runFile
-	private static final String PATH = "src\\testsuite\\read.txt";
-
 	// main
 	public static void main(String[] args) throws IOException {
-		//readFile(PATH);
 		if (args.length > 1) {
-			//System.out.println("Usage: Luria filename.luria");
 			System.exit(666);
 		} else if (args.length == 1) {
 			readFile(args[0]);
@@ -72,15 +67,15 @@ public class Luria {
 
 	// error handling
 
-	public static void error(int location, String message) {
-		report(location, "", message);
-	}
-
 	private static void report(int line, String location, String message) {
 		System.err.println("[line " + line + "] Error" + location + ": " + message);
 		error = true;
 	}
-
+	
+	public static void error(int location, String message) {
+		report(location, "", message);
+	}
+	
 	public static void error(Token token, String message) {
 		if (token.type == TokenType.EOF) {
 			report(token.location, " at EOF", message);
