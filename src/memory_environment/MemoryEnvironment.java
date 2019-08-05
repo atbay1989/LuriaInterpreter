@@ -8,16 +8,16 @@ import syntactic_analysis.RuntimeError;
 
 public class MemoryEnvironment {
 
-	private final MemoryEnvironment enclosing;
+	private final MemoryEnvironment outer;
 	private final Map<String, Object> table = new HashMap<>();
 	
 	// constructors: first is base case, i.e. global; second constructs with reference to its enclosing scope
 	public MemoryEnvironment() {
-		enclosing = null;
+		outer = null;
 	}
 	
-	public MemoryEnvironment(MemoryEnvironment enclosing) {
-		this.enclosing = enclosing;
+	public MemoryEnvironment(MemoryEnvironment outer) {
+		this.outer = outer;
 	} 
 
 	// get()
@@ -25,7 +25,7 @@ public class MemoryEnvironment {
 		if (table.containsKey(symbols.lexeme)) {
 			return table.get(symbols.lexeme);
 		}
-		if (enclosing != null) return enclosing.get(symbols);
+		if (outer != null) return outer.get(symbols);
 
 		throw new RuntimeError(symbols, "Error: Variable '" + symbols.lexeme + "' is undefined.");
 	} 
@@ -41,8 +41,8 @@ public class MemoryEnvironment {
 			table.put(symbol.lexeme, value);
 			return;
 		}
-		if (enclosing != null) {
-			enclosing.store(symbol, value);
+		if (outer != null) {
+			outer.store(symbol, value);
 			return;
 		}
 		throw new RuntimeError(symbol, "Error: Variable '" + symbol.lexeme + "' is undefined.");

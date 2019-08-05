@@ -29,9 +29,14 @@ public class Luria {
 	// main
 	public static void main(String[] args) throws IOException {
 		//readFile(PATH);
-		  if (args.length > 1) { System.out.println("Usage: Luria [script]");
-		  System.exit(666); } else if (args.length == 1) { readFile(args[0]); } else {
-		  runPrompt(); }
+		if (args.length > 1) {
+			System.out.println("Usage: Luria filename.luria");
+			System.exit(666);
+		} else if (args.length == 1) {
+			readFile(args[0]);
+		} else {
+			runPrompt();
+		}
 	}
 
 	// read and execute file from file path
