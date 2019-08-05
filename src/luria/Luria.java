@@ -30,7 +30,7 @@ public class Luria {
 	public static void main(String[] args) throws IOException {
 		//readFile(PATH);
 		if (args.length > 1) {
-			System.out.println("Usage: Luria filename.luria");
+			//System.out.println("Usage: Luria filename.luria");
 			System.exit(666);
 		} else if (args.length == 1) {
 			readFile(args[0]);
