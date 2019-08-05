@@ -16,21 +16,50 @@ public abstract class Statement {
 		T visitIfStatement(If statement);
 		T visitWhileStatement(While statement);
 		T visitReturnStatement(Return statement);
-		T visitReadStatement(Read statement);
+		T visitReadNumberStatement(ReadNumber statement);
+		T visitReadStringStatement(ReadString statement);
+		T visitReadBooleanStatement(ReadBoolean statement); 
 		
 	}
 	
-	public static class Read extends Statement {
+	public static class ReadBoolean extends Statement {
+		public final Expression expression;
+		
+		ReadBoolean(Expression e) {
+			this.expression = e;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitReadBooleanStatement(this);
+		}
+		
+	}
+	
+	public static class ReadNumber extends Statement {
+		public final Expression expression;
+		
+		ReadNumber(Expression e) {
+			this.expression = e;
+		}
+
+		@Override
+		public <T> T accept(Visitor<T> visitor) {
+			return visitor.visitReadNumberStatement(this);
+		}
+	}
+	
+	public static class ReadString extends Statement {
 		
 		public final Expression expression;
 		
-		Read(Expression e) {
+		ReadString(Expression e) {
 			this.expression = e;
 		}
 		
 		@Override
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visitReadStatement(this);
+			return visitor.visitReadStringStatement(this);
 		}
 		
 	}

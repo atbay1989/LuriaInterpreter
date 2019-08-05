@@ -322,17 +322,33 @@ public class Parser {
 			return printStatement();
 		if (match(RETURN))
 			return returnStatement();
-		if (match(READ))
-			return readStatement();
+		if (match(READ_NUMBER))
+			return readNumberStatement();
+		if (match(READ_STRING))
+			return readStringStatement();
+		if (match(READ_BOOLEAN))
+			return readBooleanStatement();
 		if (match(LEFT_BRACE))
 			return new Statement.Block(block());
 		return expressionStatement();
 	}
 
-	private Statement readStatement() {
+	private Statement readBooleanStatement() {
 		Expression value = expression();
 		consume(SEMI_COLON, "Error: ';' expected to end statement.");
-		return new Statement.Read(value);
+		return new Statement.ReadBoolean(value);
+	}
+
+	private Statement readStringStatement() {
+		Expression value = expression();
+		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		return new Statement.ReadString(value);
+	}
+
+	private Statement readNumberStatement() {
+		Expression value = expression();
+		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		return new Statement.ReadNumber(value);
 	}
 
 	private Statement returnStatement() {
