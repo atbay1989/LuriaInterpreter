@@ -30,7 +30,7 @@ public class Lexer {
 	// construction of reservedSequence Map
 	static {
 		reservedSequence = new HashMap<>();
-		reservedSequence.put("&&", AND);
+		reservedSequence.put("and", AND);
 		reservedSequence.put("else", ELSE);
 		reservedSequence.put("false", FALSE);
 		reservedSequence.put("for", FOR);
