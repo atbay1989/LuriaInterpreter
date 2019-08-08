@@ -12,6 +12,7 @@ import memory_environment.MemoryEnvironment;
 import syntactic_analysis.Expression;
 import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
+import syntactic_analysis.Expression.Allot;
 import syntactic_analysis.Expression.Array;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
@@ -357,6 +358,36 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		}
 
 		return null;
+	}
+
+	@Override
+	public Object visitAllotExpression(Allot expression) {
+		Expression.Index subscript = null;
+        if (expression.object instanceof Expression.Index) {
+            subscript = (Expression.Index)expression.object;
+        }
+
+        Object listObject = evaluate(subscript.object);
+        if (!(listObject instanceof List)) {
+            throw new RuntimeError(expression.symbol, "Only arrays can be subscripted.");
+        }
+
+        List<Object> list = (List)listObject;
+
+        Object indexObject = evaluate(subscript.index);
+        if (!(indexObject instanceof Double)) {
+            throw new RuntimeError(expression.symbol, "Only numbers can be used as an array index.");
+        }
+
+        int index = ((Double) indexObject).intValue();
+        if (index >= list.size()) {
+            throw new RuntimeError(expression.symbol, "Array index out of range.");
+        }
+
+        Object value = evaluate(expression.value);
+
+        list.set(index, value);
+        return value;
 	}
 
 }

@@ -1,101 +1,107 @@
-/*The Parser class is responsible for parsing or _ a context-free List of Token objects, representing the source code as lexed. Each non-terminal
-  expression has a method routine.*/
+/*
+ * The Parser class is a recursive descent parser. In its fields are the list of Token objects lexed in-order by the lexer,
+ * 'tokens', representing the parser's input, and a counter, 'current', that orients the parser as it parses the Token object
+ * sequence. Available to the parser are a methods for _. These provide the infrastructure necessary for it to carry
+ * out the process of constructing and nesting the syntax tree nodes, which are either of type Statement or Expression. The
+ * output of the parser is a list of Statement objects, 'statements', which is declared at and returned from the parse() method.
+ * */
 
 package syntactic_analysis;
 
-/*Java imports.*/
+/* Java imports.
+ * */
 import java.util.ArrayList;
 import java.util.List;
 
-/*Luria imports.*/
+/* Internal imports.
+ * */
 import luria.Luria;
 import lexical_analysis.Token;
 import lexical_analysis.TokenType;
 import static lexical_analysis.TokenType.*;
 
 public class Parser {
-/*	Fields. 'tokens' represents the Parser input, a List of Token objects, 'current' the Parser position counter.*/
 	private final List<Token> tokens;
 	private int current = 0;
 	
-/*	Constructor.*/
+/*  Constructor.
+ *  */
 	public Parser(List<Token> tokens) {
 		this.tokens = tokens;
 	}
 
-/*  The nested ParserError class.*/
+/*  The nested ParserError class is the object thrown by the parser and caught at parse().
+ *  */
 	private static class ParserError extends RuntimeException {}
 	
-/*Parser helper methods.*/
-
-	/* error() calls the Luria error() method and returns a ParserError object.*/
+/*  error() calls the Luria.parserError() method to which is passes the Token object at which the error occurred and a
+ *  relevant error message.
+ *  */
 	private ParserError error(Token token, String error) {
-		Luria.error(token, error);
+		Luria.parserError(token, error);
 		return new ParserError();
 	}
+
+/*  look() returns the current, yet to be processed Token in 'tokens'.
+ *  */
+	private Token look() {
+		return tokens.get(current);
+	}
 	
-	private Token advance() {
+/*  end() returns true if the current Token is of type EOF, i.e. the parser has reached the last Token in 'tokens'.
+ *  */
+	private boolean end() {
+		return look().type == EOF;
+	}
+
+/*  previous() returns the Token object previous to the current.
+ *  */
+	private Token previous() {
+		return tokens.get(current - 1);
+	}	
+	
+/*  next() increments the 'current' count and returns the now previous Token object, i.e. it advances the parser.
+ *  */	
+	private Token next() {
 		if (!end())
 			current++;
 		return previous();
 	}
 	
-	private Token consume(TokenType type, String error) {
-		if (check(type)) return advance();
-		throw error(peek(), error);
-	}
-	
-	private Token peek() {
-		return tokens.get(current);
-	}
-	
-	private Token previous() {
-		return tokens.get(current - 1);
+/*  process() 'consumes' expected Token objects, advancing the parser to the next Token. If an unexpected Token is
+ *  encountered, process() throws an error composed of the current Token object's data and a relevant error message.
+ *  */	
+	private Token process(TokenType type, String error) {
+		if (check(type)) return next();
+		throw error(look(), error);
 	}
 
-	// match()
+/*  match() checks for each of the TokenTypes passed to it whether it is equal to that of the current Token object,
+ *  by way of check(). If true, it advances the parser by way of next() and returns true. This allows the parser to
+ *  determine what action to take according to the Token objects it encounters.
+ *  */
 	private boolean match(TokenType... types) {
 		for (TokenType t : types) {
 			if (check(t)) {
-				advance();
+				next();
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	// check()
+/*  check() is passed a TokenType and returns true if that TokenType is equal to that of the current Token object.
+ *  This allows the parser to check for an expected, i.e. syntactically correct, Token object.
+ *  */
 	private boolean check(TokenType t) {
 		if (end()) 
 			return false;		
-		return peek().type == t;
+		return look().type == t;
 	}
+		
 	
-	private boolean end() {
-		return peek().type == EOF;
-	}
-	
-	private void sync() {
-		advance();
-		while (!end()) {
-			if (previous().type == SEMI_COLON)
-				return;
-			switch (peek().type) {
-			case FUNCTION:
-			case VARIABLE:
-			case FOR:
-			case IF:
-			case WHILE:
-			case PRINT:
-			case RETURN:
-				return;
-			}
-			advance();
-		}
-	}
-	
-/*	parse() returns the output of the Parser as a List of Statement objects. It calls the top parsing procedure until the EOF token
-	is encountered.*/
+/*	This is the entry method of the parser and outputs a list of Statement objects or syntax tree nodes. 
+ *  */
 	public List<Statement> parse() {
 		List<Statement> statements = new ArrayList<>();
 		while (!end()) {
@@ -104,7 +110,10 @@ public class Parser {
 		return statements;
 	}
 
-/*	declaration() checks for a VARIABLE token and calls the variable declaration procedure, else the statement procedure.*/
+/*	declaration() is the first method the recursive decent parser calls and it checks for declarations of either
+ *  variables or functions as signified by 'VARIABLE' or 'FUNCTION' TokenTypes. Else it calls, or descends, to 
+ *  the statement() call, i.e. the top of Luria language grammar.
+ *  */
 	private Statement declaration() {
 		try {
 			if (match(VARIABLE))
@@ -113,7 +122,7 @@ public class Parser {
 				return functionDeclaration();
 			return statement();
 		} catch (ParserError error) {
-			sync();
+			next();
 			return null;
 		}
 	}
@@ -122,26 +131,26 @@ public class Parser {
  	Variable object with its initialisation expression, e.g. 'variable x = 1 + 2', else it returns an uninitialised Variable object
  	with no assigned expression, e.g. 'variable x;'*/
 	private Statement variableDeclaration() {
-		Token symbol = consume(SIGNIFIER, "Error: Invalid variable declaration.");
+		Token symbol = process(SIGNIFIER, "Error: Invalid variable declaration.");
 		Expression initialisation = null;
 		if (match(EQUAL)) {
 			initialisation = expression();
 		}
-		consume(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
+		process(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
 		return new Statement.VariableDeclaration(symbol, initialisation);
 	}
 	
 	private Statement functionDeclaration() {
-		Token symbol = consume(SIGNIFIER, "Error: Invalid function declaration");
-		consume(LEFT_PARENTHESIS, "Error: '(' expected to open arguments.");
+		Token symbol = process(SIGNIFIER, "Error: Invalid function declaration");
+		process(LEFT_PARENTHESIS, "Error: '(' expected to open arguments.");
 		List<Token> arguments = new ArrayList<>();
 		if (!check(RIGHT_PARENTHESIS)) {
 			do {
-				arguments.add(consume(SIGNIFIER, "Error: Invalid argument."));
+				arguments.add(process(SIGNIFIER, "Error: Invalid argument."));
 			} while (match(COMMA));
 		}
-		consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
-		consume(LEFT_BRACE, "Error: '{' expected to open block.");
+		process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		process(LEFT_BRACE, "Error: '{' expected to open block.");
 		List<Statement> functionBlock = block();
 		return new Statement.Function(symbol, arguments, functionBlock);
 	}
@@ -155,13 +164,16 @@ public class Parser {
 	private Expression assignment() {
 	    Expression e = or();  
 		if (match(EQUAL)) {
-			Token result = previous();
+			Token previous = previous();
 			Expression value = assignment();
 			if (e instanceof Expression.VariableExpression) {
 				Token symbol = ((Expression.VariableExpression) e).symbol;
 				return new Expression.Assignment(symbol, value);
-			}	
-			error(result, "Error: Invalid assignment.");
+			} else if (e instanceof Expression.Index) {
+				Token symbol = ((Expression.Index) e).symbol;
+				return new Expression.Allot(e, symbol, value);
+			}
+			error(previous, "Error: Invalid assignment.");
 		}
 		return e;
 	}
@@ -252,11 +264,22 @@ public class Parser {
 		Token symbol = previous();
 		while (true) {
 			if (match(LEFT_PARENTHESIS)) {
-				e = endCall(e);
+				
+				List<Expression> arguments = new ArrayList<>();
+				if (!check(RIGHT_PARENTHESIS)) {
+					do {
+						arguments.add(expression());
+					} while (match(COMMA));
+				}
+				Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+				return new Expression.Call(e, rightParenthesis, arguments);
+				
+				//e = endCall(e);
 			} else if (match(LEFT_BRACKET)) {
-				Expression array = literal();
+				//Expression array = literal();
+				Expression array = expression();
 				// Error checking? Consuming ']'.
-				Token rightBracket = consume(RIGHT_BRACKET, "Error: expected ']' after index.");
+				Token rightBracket = process(RIGHT_BRACKET, "Error: expected ']' after index.");
 				e = new Expression.Index(e, symbol, array);
 			} else {
 				break;
@@ -266,16 +289,16 @@ public class Parser {
 	}
 	
 /*	endCall().*/
-	private Expression endCall(Expression e) {
+/*	private Expression endCall(Expression e) {
 		List<Expression> arguments = new ArrayList<>();
 		if (!check(RIGHT_PARENTHESIS)) {
 			do {
 				arguments.add(expression());
 			} while (match(COMMA));
 		}
-		Token rightParenthesis = consume(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
 		return new Expression.Call(e, rightParenthesis, arguments);
-	}
+	}*/
 
 	/* literal(). */
 	private Expression literal() {
@@ -292,7 +315,7 @@ public class Parser {
 		}
 		if (match(LEFT_PARENTHESIS)) {
 			Expression e = expression();
-			consume(RIGHT_PARENTHESIS, "Error: Expecting ')' after expression.");
+			process(RIGHT_PARENTHESIS, "Error: Expecting ')' after expression.");
 			return new Expression.Grouping(e);
 		}
 		if (match(LEFT_BRACKET)) {
@@ -306,10 +329,10 @@ public class Parser {
 					components.add(component);
 				} while (match(COMMA));
 			}
-			consume(RIGHT_BRACKET, "Error: ']' expected to close array declaration.");
+			process(RIGHT_BRACKET, "Error: ']' expected to close array declaration.");
 			return new Expression.Array(components);
 		}
-		throw error(peek(), "Error: expression expected.");
+		throw error(look(), "Error: expression expected.");
 	}
 	
 	// statement()
@@ -335,19 +358,19 @@ public class Parser {
 
 	private Statement readBooleanStatement() {
 		Expression value = expression();
-		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.ReadBoolean(value);
 	}
 
 	private Statement readStringStatement() {
 		Expression value = expression();
-		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.ReadString(value);
 	}
 
 	private Statement readNumberStatement() {
 		Expression value = expression();
-		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.ReadNumber(value);
 	}
 
@@ -357,22 +380,22 @@ public class Parser {
 		if (!check(SEMI_COLON)) {
 			value = expression();
 		}
-		consume(SEMI_COLON, "Error: expecting ';' after return expression.");
+		process(SEMI_COLON, "Error: expecting ';' after return expression.");
 		return new Statement.Return(symbol, value);
 	}
 
 	private Statement whileStatement() {
-	    consume(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");   
+	    process(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");   
 	    Expression condition = expression();                      
-	    consume(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
+	    process(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
 	    Statement body = statement();
 	    return new Statement.While(condition, body);
 	}
 
 	private Statement ifStatement() {
-		consume(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");
+		process(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");
 		Expression condition = expression();
-		consume(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
+		process(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
 
 		Statement thenBranch = statement();
 		Statement elseBranch = null;
@@ -383,17 +406,19 @@ public class Parser {
 		return new Statement.If(condition, thenBranch, elseBranch);
 	}
 
-	// printStatement()
+/*  printStatement() constructs a Print object. Its Visitor is responsible for evaluating and 'printing' (System.out)
+ *  the object's expression, i.e. 'value'.
+ *  */
 	private Statement printStatement() {
 		Expression value = expression();
-		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.Print(value);
 	}
 	
 	// expressionStatement() {
 	private Statement expressionStatement() {
 		Expression e = expression();
-		consume(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "Error: ';' expected to end statement.");
 		return new Statement.ExpressionStatement(e);
 	}
 	
@@ -403,7 +428,7 @@ public class Parser {
 		while (!check(RIGHT_BRACE) && !end()) {
 			block.add(declaration());
 		}
-		consume(RIGHT_BRACE, "Error: '}' expected to end block.");
+		process(RIGHT_BRACE, "Error: '}' expected to end block.");
 		return block;
 	}
 

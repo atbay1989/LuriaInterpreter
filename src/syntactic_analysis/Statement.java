@@ -15,10 +15,10 @@ public abstract class Statement {
 		T visitFunctionStatement(Function statement);
 		T visitIfStatement(If statement);
 		T visitWhileStatement(While statement);
-		T visitReturnStatement(Return statement);
 		T visitReadNumberStatement(ReadNumber statement);
 		T visitReadStringStatement(ReadString statement);
-		T visitReadBooleanStatement(ReadBoolean statement); 
+		T visitReadBooleanStatement(ReadBoolean statement);
+		T visitReturnStatement(Return statement);
 		
 	}
 	

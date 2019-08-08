@@ -43,7 +43,6 @@ public class Lexer {
 		reservedSequence.put("readnumber", READ_NUMBER);
 		reservedSequence.put("readstring", READ_STRING);
 		reservedSequence.put("return", RETURN);
-		reservedSequence.put("this", THIS);
 		reservedSequence.put("true", TRUE);
 		reservedSequence.put("variable", VARIABLE);
 		reservedSequence.put("while", WHILE);
@@ -208,7 +207,7 @@ public class Lexer {
 			} else if (alphabeticChar(c)) {
 				lexSignifier();
 			} else {
-				Luria.error(location, "Error: unexpected character.");
+				Luria.lexerError(location, "unsupported character.");
 			}
 		}
 	}
@@ -237,7 +236,7 @@ public class Lexer {
 			consume();
 		}
 		if (end()) {
-			Luria.error(location, "Error: string not closed.");
+			Luria.lexerError(location, "string not closed.");
 			return;
 		}
 		consume();

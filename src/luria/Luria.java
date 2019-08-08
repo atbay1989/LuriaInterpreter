@@ -25,13 +25,14 @@ public class Luria {
 
 	// main
 	public static void main(String[] args) throws IOException {
-		if (args.length > 1) {
+		readFile("src\\testsuite\\readtest.txt");
+/*		if (args.length > 1) {
 			System.exit(666);
 		} else if (args.length == 1) {
 			readFile(args[0]);
 		} else {
 			runPrompt();
-		}
+		}*/
 	}
 
 	// read and execute file from file path
@@ -72,11 +73,11 @@ public class Luria {
 		error = true;
 	}
 	
-	public static void error(int location, String message) {
+	public static void lexerError(int location, String message) {
 		report(location, "", message);
 	}
 	
-	public static void error(Token token, String message) {
+	public static void parserError(Token token, String message) {
 		if (token.type == TokenType.EOF) {
 			report(token.location, " at EOF", message);
 		} else {
