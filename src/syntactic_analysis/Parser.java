@@ -90,6 +90,26 @@ public class Parser {
 		return false;
 	}
 	
+	private void sync() {
+		next();
+		while (!end()) {
+			if (previous().type == SEMI_COLON)
+				return;
+			switch (look().type) {
+			case FUNCTION:
+			case VARIABLE:
+			case FOR:
+			case IF:
+			case WHILE:
+			case PRINT:
+			case RETURN:
+			case READ_NUMBER:
+				return;
+			}
+			next();
+		}
+	}
+	
 /*  check() is passed a TokenType and returns true if that TokenType is equal to that of the current Token object.
  *  This allows the parser to check for an expected, i.e. syntactically correct, Token object.
  *  */
@@ -122,7 +142,8 @@ public class Parser {
 				return functionDeclaration();
 			return statement();
 		} catch (ParserError error) {
-			next();
+			//next();
+			sync();
 			return null;
 		}
 	}
@@ -265,7 +286,7 @@ public class Parser {
 		while (true) {
 			if (match(LEFT_PARENTHESIS)) {
 				
-				List<Expression> arguments = new ArrayList<>();
+/*				List<Expression> arguments = new ArrayList<>();
 				if (!check(RIGHT_PARENTHESIS)) {
 					do {
 						arguments.add(expression());
@@ -273,8 +294,8 @@ public class Parser {
 				}
 				Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
 				return new Expression.Call(e, rightParenthesis, arguments);
-				
-				//e = endCall(e);
+				*/
+				e = endCall(e);
 			} else if (match(LEFT_BRACKET)) {
 				//Expression array = literal();
 				Expression array = expression();
@@ -289,7 +310,7 @@ public class Parser {
 	}
 	
 /*	endCall().*/
-/*	private Expression endCall(Expression e) {
+	private Expression endCall(Expression e) {
 		List<Expression> arguments = new ArrayList<>();
 		if (!check(RIGHT_PARENTHESIS)) {
 			do {
@@ -298,7 +319,7 @@ public class Parser {
 		}
 		Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
 		return new Expression.Call(e, rightParenthesis, arguments);
-	}*/
+	}
 
 	/* literal(). */
 	private Expression literal() {
@@ -325,7 +346,8 @@ public class Parser {
 			}
 			if (!match(RIGHT_BRACKET)) {
 				do {
-					Expression component = assignment();
+					//Expression component = assignment();
+					Expression component = expression();
 					components.add(component);
 				} while (match(COMMA));
 			}

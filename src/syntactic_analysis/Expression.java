@@ -125,10 +125,8 @@ public abstract class Expression {
 
 		public Index(Expression object, Token symbol, Expression index) {
 			this.object = object;
-			//System.out.println("object: " + object.toString());
 			this.symbol = symbol;
 			this.index = index;
-			//System.out.println("index: " + index.toString());
 		}
 
 		@Override

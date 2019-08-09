@@ -18,14 +18,12 @@ import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
 
 public class Luria {
-	// fields
 	private static final Interpreter interpreter = new Interpreter();
 	static boolean error = false;
 	static boolean runtimeError = false;
 
-	// main
 	public static void main(String[] args) throws IOException {
-		readFile("src\\testsuite\\readtest.txt");
+		readFile("src\\testsuite\\read.txt");
 /*		if (args.length > 1) {
 			System.exit(666);
 		} else if (args.length == 1) {
@@ -86,7 +84,7 @@ public class Luria {
 	}
 
 	public static void runtimeError(RuntimeError error) {
-		System.err.println(error.getMessage() + "\n[line " + error.token.location + "]");
+		System.err.println(error.getMessage() + "\n[@ " + error.token.location + "]");
 		runtimeError = true;
 	}
 

@@ -199,8 +199,6 @@ public class Lexer {
 		case '"':
 			lexString();
 			break;
-/*		A lexeme beginning with a numeric digit is assumed to be a number; a lexeme beginning with an alphabetic 
-		character is assumed to be a signifier, i.e. a variable name.*/
 		default:
 			if (numericChar(c)) {
 				lexNumber();

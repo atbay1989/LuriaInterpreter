@@ -366,26 +366,20 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
         if (expression.object instanceof Expression.Index) {
             subscript = (Expression.Index)expression.object;
         }
-
         Object listObject = evaluate(subscript.object);
         if (!(listObject instanceof List)) {
             throw new RuntimeError(expression.symbol, "Only arrays can be subscripted.");
         }
-
         List<Object> list = (List)listObject;
-
         Object indexObject = evaluate(subscript.index);
         if (!(indexObject instanceof Double)) {
             throw new RuntimeError(expression.symbol, "Only numbers can be used as an array index.");
         }
-
         int index = ((Double) indexObject).intValue();
         if (index >= list.size()) {
             throw new RuntimeError(expression.symbol, "Array index out of range.");
         }
-
         Object value = evaluate(expression.value);
-
         list.set(index, value);
         return value;
 	}
