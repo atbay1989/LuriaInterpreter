@@ -7,12 +7,10 @@ import java.util.List;
 import java.util.Scanner;
 
 import lexical_analysis.Token;
-import luria.Luria;
-import memory_environment.MemoryEnvironment;
+import luria_interpreter.LuriaInterpreter;
 import syntactic_analysis.Expression;
-import syntactic_analysis.RuntimeError;
 import syntactic_analysis.Statement;
-import syntactic_analysis.Expression.Allot;
+import syntactic_analysis.Expression.Allocation;
 import syntactic_analysis.Expression.Array;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
@@ -44,8 +42,8 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			for (Statement s : statements) {
 				execute(s);
 			}
-		} catch (RuntimeError error) {
-			Luria.runtimeError(error);
+		} catch (InterpreterError error) {
+			LuriaInterpreter.interpreterError(error);
 		}
 	}
 
@@ -73,13 +71,13 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	private void checkOperand(Token operator, Object operand) {
 		if (operand instanceof Double)
 			return;
-		throw new RuntimeError(operator, "Error: Operand must be a number.");
+		throw new InterpreterError(operator, "Error: Operand must be a number.");
 	}
 
 	private void checkOperands(Token operator, Object left, Object right) {
 		if (left instanceof Double && right instanceof Double)
 			return;
-		throw new RuntimeError(operator, "Error: Operands must be numbers.");
+		throw new InterpreterError(operator, "Error: Operands must be numbers.");
 	}
 
 	private boolean truthy(Object o) {
@@ -127,7 +125,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			if (left instanceof String && right instanceof String) {
 				return (String) left + (String) right;
 			}
-			throw new RuntimeError(e.operator, "Error: Operands must be of same type.");
+			throw new InterpreterError(e.operator, "Error: Operands must be of same type.");
 		case MINUS:
 			checkOperands(e.operator, left, right);
 			return (double) left - (double) right;
@@ -214,7 +212,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 
 	@Override
 	public Void visitFunctionStatement(Function statement) {
-		syntactic_analysis.Function function = new syntactic_analysis.Function(statement);
+		interpretation.Function function = new interpretation.Function(statement);
 		environment.lookup(statement.symbol.lexeme, function);
 		return null;
 	}
@@ -251,14 +249,17 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		return null;
 	}
 
+/*  visitCallExpression() upon call of the Function class' call() method, to which is passed a reference to the current
+ *  MemoryEnvironment and the list of arguments (i.e. parameters) associated with the function...
+ *  */
 	@Override
 	public Object visitCallExpression(Call expression) {
-		Object callee = evaluate(expression.callee);
+		Object called = evaluate(expression.callee);
 		List<Object> arguments = new ArrayList<>();
 		for (Expression a : expression.arguments) {
 			arguments.add(evaluate(a));
 		}
-		syntactic_analysis.Callable function = (syntactic_analysis.Callable) callee;
+		interpretation.Callable function = (interpretation.Callable) called;
 		return function.call(this, arguments);
 	}
 
@@ -267,7 +268,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		Object value = null;
 		if (statement.value != null)
 			value = evaluate(statement.value);
-		throw new syntactic_analysis.Return(value);
+		throw new interpretation.Return(value);
 	}
 
 	@Override
@@ -285,16 +286,16 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	public Object visitIndexExpression(Index expression) {
         Object object = evaluate(expression.object);
         if (!(object instanceof List)) {
-            throw new RuntimeError(expression.symbol, "Error: array expected.");
+            throw new InterpreterError(expression.symbol, "Error: array expected.");
         }
         List array = (List)object;
         Object objectIndex = evaluate(expression.index);
         if (!(objectIndex instanceof Double)) {
-            throw new RuntimeError(expression.symbol, "Error: integer expected.");
+            throw new InterpreterError(expression.symbol, "Error: integer expected.");
         }
         int index = ((Double) objectIndex).intValue();
         if (index >= array.size()) {
-            throw new RuntimeError(expression.symbol, "Error: index is beyond array range.");
+            throw new InterpreterError(expression.symbol, "Error: index is beyond array range.");
         }
         return array.get(index);
 	}
@@ -353,7 +354,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 				environment.store(t, value);
 				break;
 			} else {
-				throw new RuntimeError(t, "Boolean value expected.");
+				throw new InterpreterError(t, "Boolean value expected.");
 			}
 		}
 
@@ -361,23 +362,23 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Object visitAllotExpression(Allot expression) {
+	public Object visitAllocationExpression(Allocation expression) {
 		Expression.Index subscript = null;
         if (expression.object instanceof Expression.Index) {
             subscript = (Expression.Index)expression.object;
         }
         Object listObject = evaluate(subscript.object);
         if (!(listObject instanceof List)) {
-            throw new RuntimeError(expression.symbol, "Only arrays can be subscripted.");
+            throw new InterpreterError(expression.symbol, "");
         }
         List<Object> list = (List)listObject;
         Object indexObject = evaluate(subscript.index);
         if (!(indexObject instanceof Double)) {
-            throw new RuntimeError(expression.symbol, "Only numbers can be used as an array index.");
+            throw new InterpreterError(expression.symbol, "Expected expression for array index.");
         }
         int index = ((Double) indexObject).intValue();
         if (index >= list.size()) {
-            throw new RuntimeError(expression.symbol, "Array index out of range.");
+            throw new InterpreterError(expression.symbol, "Array index out of range.");
         }
         Object value = evaluate(expression.value);
         list.set(index, value);

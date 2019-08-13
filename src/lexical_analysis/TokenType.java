@@ -13,9 +13,9 @@ public enum TokenType {
 	MINUS,
 	MODULO,
 	PLUS,
-	RIGHT_PARENTHESIS,
 	RIGHT_BRACE,
 	RIGHT_BRACKET,
+	RIGHT_PARENTHESIS,
 	SEMI_COLON,
 	
 /*	One or many character tokens.*/

@@ -1,10 +1,9 @@
-package memory_environment;
+package interpretation;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import lexical_analysis.Token;
-import syntactic_analysis.RuntimeError;
 
 public class MemoryEnvironment {
 
@@ -27,7 +26,7 @@ public class MemoryEnvironment {
 		}
 		if (outer != null) return outer.get(symbols);
 
-		throw new RuntimeError(symbols, "Error: Variable '" + symbols.lexeme + "' is undefined.");
+		throw new InterpreterError(symbols, "Error: Variable '" + symbols.lexeme + "' is undefined.");
 	} 
 
 	// loopup()
@@ -45,7 +44,7 @@ public class MemoryEnvironment {
 			outer.store(symbol, value);
 			return;
 		}
-		throw new RuntimeError(symbol, "Error: Variable '" + symbol.lexeme + "' is undefined.");
+		throw new InterpreterError(symbol, "Error: Variable '" + symbol.lexeme + "' is undefined.");
 	}
 	
 }

@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// Luria imports
-import luria.Luria;
+import luria_interpreter.LuriaInterpreter;
 
 public class Lexer {
 	// fields 
@@ -57,7 +56,7 @@ public class Lexer {
 // These are the helper methods of the Lexer class.
 	
 	// consume() increments the current counter and returns the next char to lex.
-	private char consume() {
+	private char process() {
 		current++;
 		return sourceCode.charAt(current - 1);
 	}
@@ -101,7 +100,7 @@ public class Lexer {
 	}
 
 	// peek()
-	private char lookahead() {
+	private char look() {
 		if (end()) {
 			return '\0';
 		}
@@ -110,7 +109,7 @@ public class Lexer {
 	}
 
 	// peekNext()
-	private char lookaheadNext() {
+	private char lookahead() {
 		if (current + 1 >= sourceCode.length()) {
 			return '\0';
 		}
@@ -137,7 +136,7 @@ public class Lexer {
 
 	// lexToken()
 	private void lexToken() {
-		char c = consume();
+		char c = process();
 		switch (c) {
 		// one character token
 		case '(': addToken(LEFT_PARENTHESIS);
@@ -179,8 +178,8 @@ public class Lexer {
 			break;
 		case '/':
 			if (manyChar('/')) {
-				while (lookahead() != '\n' && !end()) {
-					consume();
+				while (look() != '\n' && !end()) {
+					process();
 				}
 			} else {
 				addToken(FORWARD_SLASH);
@@ -205,22 +204,22 @@ public class Lexer {
 			} else if (alphabeticChar(c)) {
 				lexSignifier();
 			} else {
-				Luria.lexerError(location, "unsupported character.");
+				LuriaInterpreter.lexerError(location, "unsupported character.");
 			}
 		}
 	}
 		
 	// lexNumber() 
 	private void lexNumber() {
-		while (numericChar(lookahead())) {
-			consume();
+		while (numericChar(look())) {
+			process();
 		}
 		
-		if (lookahead() == '.' && numericChar(lookaheadNext())) {
-			consume();
+		if (look() == '.' && numericChar(lookahead())) {
+			process();
 
-			while (numericChar(lookahead())) {
-				consume();
+			while (numericChar(look())) {
+				process();
 			}
 		}
 		addToken(NUMBER, Double.parseDouble(sourceCode.substring(start, current)));
@@ -228,16 +227,16 @@ public class Lexer {
 
 	// lexString()
 	private void lexString() {
-		while (lookahead() != '"' && !end()) {
-			if (lookahead() == '\n')
+		while (look() != '"' && !end()) {
+			if (look() == '\n')
 				location++;
-			consume();
+			process();
 		}
 		if (end()) {
-			Luria.lexerError(location, "string not closed.");
+			LuriaInterpreter.lexerError(location, "string not closed.");
 			return;
 		}
-		consume();
+		process();
 		String value = sourceCode.substring(start + 1, current - 1);
 		addToken(STRING, value);
 	}
@@ -245,8 +244,8 @@ public class Lexer {
 	/*	lexSignifier() checks a char sequence not prefixed with a quotation mark (") against the reserved sequences.
 	If no type (null) is returned, it adds a Token of type SIGNIFIER.*/
 	private void lexSignifier() {
-		while (alphanumericChar(lookahead())) {
-			consume();
+		while (alphanumericChar(look())) {
+			process();
 		}
 		String text = sourceCode.substring(start, current);
 		TokenType type = reservedSequence.get(text);
