@@ -8,8 +8,6 @@
 
 package syntactic_analysis;
 
-/* Java imports.
- * */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +21,6 @@ public class Parser {
 	private final List<Token> tokens;
 	private int current = 0;
 	
-/*  Constructor.
- *  */
 	public Parser(List<Token> tokens) {
 		this.tokens = tokens;
 	}
@@ -172,7 +168,7 @@ public class Parser {
 		process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
 		process(LEFT_BRACE, "'{' expected to open block.");
 		List<Statement> functionBlock = block();
-		return new Statement.Function(symbol, arguments, functionBlock);
+		return new Statement.FunctionDeclaration(symbol, arguments, functionBlock);
 	}
 	
 /*	expression() calls assignment().*/
