@@ -1,13 +1,12 @@
-package syntactic_analysis;
+package interpretation;
 
 import java.util.List;
 
-import interpretation.Interpreter;
-import memory_environment.MemoryEnvironment;
+import syntactic_analysis.Statement;
 
 public class Function implements Callable {
 	private final Statement.Function declaration;
-	
+
 	public Function(Statement.Function declaration) {
 		this.declaration = declaration;
 	}
@@ -26,5 +25,10 @@ public class Function implements Callable {
 		interpreter.executeBlock(declaration.functionBlock, environment);
 		return null;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "<function " + declaration.symbol.lexeme + "";
+	}
+
 }

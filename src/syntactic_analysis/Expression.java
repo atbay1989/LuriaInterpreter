@@ -9,7 +9,7 @@ public abstract class Expression {
 	public abstract <T> T accept(Visitor<T> visitor);
 	
 	public interface Visitor<T> {
-		T visitAllotExpression(Allot expression);
+		T visitAllocationExpression(Allocation expression);
 		T visitArrayExpression(Array expression);
 		T visitAssignmentExpression(Assignment expression);
 		T visitBinaryExpression(Binary expression);
@@ -23,12 +23,12 @@ public abstract class Expression {
 
 	}
 
-    public static class Allot extends Expression {
+    public static class Allocation extends Expression {
         public final Expression object;
         public final Token symbol;
         public final Expression value;
     	
-    	Allot(Expression object, Token symbol, Expression value) {
+    	Allocation(Expression object, Token symbol, Expression value) {
             this.object = object;
             this.symbol = symbol;
             this.value = value;
@@ -36,7 +36,7 @@ public abstract class Expression {
 
 		@Override
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visitAllotExpression(this);
+			return visitor.visitAllocationExpression(this);
 		}
 
     }

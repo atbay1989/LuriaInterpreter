@@ -13,11 +13,10 @@ package syntactic_analysis;
 import java.util.ArrayList;
 import java.util.List;
 
-/* Internal imports.
- * */
-import luria.Luria;
 import lexical_analysis.Token;
 import lexical_analysis.TokenType;
+import luria_interpreter.LuriaInterpreter;
+
 import static lexical_analysis.TokenType.*;
 
 public class Parser {
@@ -38,7 +37,7 @@ public class Parser {
  *  relevant error message.
  *  */
 	private ParserError error(Token token, String error) {
-		Luria.parserError(token, error);
+		LuriaInterpreter.parserError(token, error);
 		return new ParserError();
 	}
 
@@ -152,26 +151,26 @@ public class Parser {
  	Variable object with its initialisation expression, e.g. 'variable x = 1 + 2', else it returns an uninitialised Variable object
  	with no assigned expression, e.g. 'variable x;'*/
 	private Statement variableDeclaration() {
-		Token symbol = process(SIGNIFIER, "Error: Invalid variable declaration.");
+		Token symbol = process(SIGNIFIER, "Invalid variable declaration.");
 		Expression initialisation = null;
 		if (match(EQUAL)) {
 			initialisation = expression();
 		}
-		process(SEMI_COLON, "Error: Invalid variable declaration. ';' expected after variable declaration.");
+		process(SEMI_COLON, "Invalid variable declaration. ';' expected after variable declaration.");
 		return new Statement.VariableDeclaration(symbol, initialisation);
 	}
 	
 	private Statement functionDeclaration() {
-		Token symbol = process(SIGNIFIER, "Error: Invalid function declaration");
-		process(LEFT_PARENTHESIS, "Error: '(' expected to open arguments.");
+		Token symbol = process(SIGNIFIER, "Invalid function declaration");
+		process(LEFT_PARENTHESIS, "'(' expected to open arguments.");
 		List<Token> arguments = new ArrayList<>();
 		if (!check(RIGHT_PARENTHESIS)) {
 			do {
-				arguments.add(process(SIGNIFIER, "Error: Invalid argument."));
+				arguments.add(process(SIGNIFIER, "Invalid argument."));
 			} while (match(COMMA));
 		}
-		process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
-		process(LEFT_BRACE, "Error: '{' expected to open block.");
+		process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
+		process(LEFT_BRACE, "'{' expected to open block.");
 		List<Statement> functionBlock = block();
 		return new Statement.Function(symbol, arguments, functionBlock);
 	}
@@ -192,9 +191,9 @@ public class Parser {
 				return new Expression.Assignment(symbol, value);
 			} else if (e instanceof Expression.Index) {
 				Token symbol = ((Expression.Index) e).symbol;
-				return new Expression.Allot(e, symbol, value);
+				return new Expression.Allocation(e, symbol, value);
 			}
-			error(previous, "Error: Invalid assignment.");
+			error(previous, "Invalid assignment.");
 		}
 		return e;
 	}
@@ -284,23 +283,22 @@ public class Parser {
 		Expression e = literal();
 		Token symbol = previous();
 		while (true) {
-			if (match(LEFT_PARENTHESIS)) {
-				
-/*				List<Expression> arguments = new ArrayList<>();
+			if (match(LEFT_PARENTHESIS)) {	
+				List<Expression> arguments = new ArrayList<>();
 				if (!check(RIGHT_PARENTHESIS)) {
 					do {
 						arguments.add(expression());
 					} while (match(COMMA));
 				}
-				Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+				Token rightParenthesis = process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
 				return new Expression.Call(e, rightParenthesis, arguments);
-				*/
-				e = endCall(e);
+				
+				//e = endCall(e);
 			} else if (match(LEFT_BRACKET)) {
 				//Expression array = literal();
 				Expression array = expression();
 				// Error checking? Consuming ']'.
-				Token rightBracket = process(RIGHT_BRACKET, "Error: expected ']' after index.");
+				Token rightBracket = process(RIGHT_BRACKET, "expected ']' after index.");
 				e = new Expression.Index(e, symbol, array);
 			} else {
 				break;
@@ -310,16 +308,16 @@ public class Parser {
 	}
 	
 /*	endCall().*/
-	private Expression endCall(Expression e) {
+/*	private Expression endCall(Expression e) {
 		List<Expression> arguments = new ArrayList<>();
 		if (!check(RIGHT_PARENTHESIS)) {
 			do {
 				arguments.add(expression());
 			} while (match(COMMA));
 		}
-		Token rightParenthesis = process(RIGHT_PARENTHESIS, "Error: ')' expected to close arguments.");
+		Token rightParenthesis = process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
 		return new Expression.Call(e, rightParenthesis, arguments);
-	}
+	}*/
 
 	/* literal(). */
 	private Expression literal() {
@@ -336,7 +334,7 @@ public class Parser {
 		}
 		if (match(LEFT_PARENTHESIS)) {
 			Expression e = expression();
-			process(RIGHT_PARENTHESIS, "Error: Expecting ')' after expression.");
+			process(RIGHT_PARENTHESIS, "')' expected after expression.");
 			return new Expression.Grouping(e);
 		}
 		if (match(LEFT_BRACKET)) {
@@ -351,10 +349,10 @@ public class Parser {
 					components.add(component);
 				} while (match(COMMA));
 			}
-			process(RIGHT_BRACKET, "Error: ']' expected to close array declaration.");
+			process(RIGHT_BRACKET, "']' expected to close array declaration.");
 			return new Expression.Array(components);
 		}
-		throw error(look(), "Error: expression expected.");
+		throw error(look(), "expression expected.");
 	}
 	
 	// statement()
@@ -380,19 +378,19 @@ public class Parser {
 
 	private Statement readBooleanStatement() {
 		Expression value = expression();
-		process(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "';' expected to end statement.");
 		return new Statement.ReadBoolean(value);
 	}
 
 	private Statement readStringStatement() {
 		Expression value = expression();
-		process(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "';' expected to end statement.");
 		return new Statement.ReadString(value);
 	}
 
 	private Statement readNumberStatement() {
 		Expression value = expression();
-		process(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "';' expected to end statement.");
 		return new Statement.ReadNumber(value);
 	}
 
@@ -402,22 +400,22 @@ public class Parser {
 		if (!check(SEMI_COLON)) {
 			value = expression();
 		}
-		process(SEMI_COLON, "Error: expecting ';' after return expression.");
+		process(SEMI_COLON, "expecting ';' after return expression.");
 		return new Statement.Return(symbol, value);
 	}
 
 	private Statement whileStatement() {
-	    process(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");   
+	    process(LEFT_PARENTHESIS, "'(' expected to start condition.");   
 	    Expression condition = expression();                      
-	    process(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
+	    process(RIGHT_PARENTHESIS, "')' expected to end condition.");
 	    Statement body = statement();
 	    return new Statement.While(condition, body);
 	}
 
 	private Statement ifStatement() {
-		process(LEFT_PARENTHESIS, "Error: '(' expected to start condition.");
+		process(LEFT_PARENTHESIS, "'(' expected to start condition.");
 		Expression condition = expression();
-		process(RIGHT_PARENTHESIS, "Error: ')' expected to end condition.");
+		process(RIGHT_PARENTHESIS, "')' expected to end condition.");
 
 		Statement thenBranch = statement();
 		Statement elseBranch = null;
@@ -433,14 +431,14 @@ public class Parser {
  *  */
 	private Statement printStatement() {
 		Expression value = expression();
-		process(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "';' expected to end statement.");
 		return new Statement.Print(value);
 	}
 	
 	// expressionStatement() {
 	private Statement expressionStatement() {
 		Expression e = expression();
-		process(SEMI_COLON, "Error: ';' expected to end statement.");
+		process(SEMI_COLON, "';' expected to end statement.");
 		return new Statement.ExpressionStatement(e);
 	}
 	
@@ -450,7 +448,7 @@ public class Parser {
 		while (!check(RIGHT_BRACE) && !end()) {
 			block.add(declaration());
 		}
-		process(RIGHT_BRACE, "Error: '}' expected to end block.");
+		process(RIGHT_BRACE, "'}' expected to end block.");
 		return block;
 	}
 
