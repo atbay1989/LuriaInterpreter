@@ -289,11 +289,8 @@ public class Parser {
 				Token rightParenthesis = process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
 				return new Expression.Call(e, rightParenthesis, arguments);
 				
-				//e = endCall(e);
 			} else if (match(LEFT_BRACKET)) {
-				//Expression array = literal();
 				Expression array = expression();
-				// Error checking? Consuming ']'.
 				Token rightBracket = process(RIGHT_BRACKET, "expected ']' after index.");
 				e = new Expression.Index(e, symbol, array);
 			} else {
@@ -303,18 +300,6 @@ public class Parser {
 		return e;
 	}
 	
-/*	endCall().*/
-/*	private Expression endCall(Expression e) {
-		List<Expression> arguments = new ArrayList<>();
-		if (!check(RIGHT_PARENTHESIS)) {
-			do {
-				arguments.add(expression());
-			} while (match(COMMA));
-		}
-		Token rightParenthesis = process(RIGHT_PARENTHESIS, "')' expected to close arguments.");
-		return new Expression.Call(e, rightParenthesis, arguments);
-	}*/
-
 	/* literal(). */
 	private Expression literal() {
 		if (match(FALSE))
@@ -331,7 +316,7 @@ public class Parser {
 		if (match(LEFT_PARENTHESIS)) {
 			Expression e = expression();
 			process(RIGHT_PARENTHESIS, "')' expected after expression.");
-			return new Expression.Grouping(e);
+			return new Expression.Combination(e);
 		}
 		if (match(LEFT_BRACKET)) {
 			List<Expression> components = new ArrayList<>();
@@ -340,7 +325,6 @@ public class Parser {
 			}
 			if (!match(RIGHT_BRACKET)) {
 				do {
-					//Expression component = assignment();
 					Expression component = expression();
 					components.add(component);
 				} while (match(COMMA));
@@ -396,7 +380,7 @@ public class Parser {
 		if (!check(SEMI_COLON)) {
 			value = expression();
 		}
-		process(SEMI_COLON, "expecting ';' after return expression.");
+		process(SEMI_COLON, "';' expected after return expression.");
 		return new Statement.Return(symbol, value);
 	}
 
@@ -418,7 +402,6 @@ public class Parser {
 		if (match(ELSE)) {
 			elseBranch = statement();
 		}
-
 		return new Statement.If(condition, thenBranch, elseBranch);
 	}
 

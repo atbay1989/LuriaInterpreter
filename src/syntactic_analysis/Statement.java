@@ -1,3 +1,16 @@
+/*
+ * Statement is an abstract class from which extend those classes that represent statement nodes in the
+ * abstract syntax tree. These concrete classes are nested within Statement only for the sake of ease of
+ * coding. Similarly, Statement has within it a nested Visitor interface and an abstract, generic accept()
+ * method that subclasses implement. This application of the Visitor pattern allows for the definition
+ * of complex methods specific to each Statement subclass in a single, separate class, Interpreter,
+ * which implements the Visitor interface.
+ * 
+ * Significance of each subclass' fields is elaborated upon in comments at the Parser and Interpreter classes
+ * that construct and evaluate these objects, respectively. 
+ * 
+ * */
+
 package syntactic_analysis;
 
 import java.util.List;

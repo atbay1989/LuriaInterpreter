@@ -1,7 +1,7 @@
 /*
  * The MemoryEnvironment class represents the 'environment' or the data structure responsible for storing
- * and retrieving variable values; this feature of the interpreter program afford the Lurias language with
- * the quality of being 'stateful', i.e. preceding events, such as variable or function declarations can be
+ * and retrieving variable values; this feature of the interpreter program affords the Luria language with
+ * the quality of being 'stateful', i.e. preceding events, such as variable or function declarations, can be
  * remembered by the interpreter program. Every instance of MemoryEnviornment has in its fields a reference 
  * to the MemoryEnvironment belonging to the Interpreter instance that instantiated it, except in the base
  * case (i.e. 'global scope') where 'outer' = null. This instantiation occurs upon the Interpreter class' 
