@@ -27,7 +27,7 @@ import syntactic_analysis.Expression.Array;
 import syntactic_analysis.Expression.Assignment;
 import syntactic_analysis.Expression.Binary;
 import syntactic_analysis.Expression.Call;
-import syntactic_analysis.Expression.Grouping;
+import syntactic_analysis.Expression.Combination;
 import syntactic_analysis.Expression.Index;
 import syntactic_analysis.Expression.Literal;
 import syntactic_analysis.Expression.Logical;
@@ -176,7 +176,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Object visitGroupingExpression(Grouping e) {
+	public Object visitCombinationExpression(Combination e) {
 		return evaluate(e.expression);
 	}
 
@@ -376,14 +376,14 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	@Override
 	public Object visitAllocationExpression(Allocation expression) {
 		Expression.Index subscript = null;
-        if (expression.object instanceof Expression.Index) {
-            subscript = (Expression.Index)expression.object;
+        if (expression.index instanceof Expression.Index) {
+            subscript = (Expression.Index) expression.index;
         }
         Object listObject = evaluate(subscript.object);
         if (!(listObject instanceof List)) {
             throw new InterpreterError(expression.symbol, "");
         }
-        List<Object> list = (List)listObject;
+        List<Object> list = (List) listObject;
         Object indexObject = evaluate(subscript.index);
         if (!(indexObject instanceof Double)) {
             throw new InterpreterError(expression.symbol, "Expected expression for array index.");

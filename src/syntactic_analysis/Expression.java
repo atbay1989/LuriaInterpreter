@@ -1,3 +1,16 @@
+/*
+ * Expression is an abstract class from which extend those classes that represent expression nodes in the
+ * abstract syntax tree. These concrete classes are nested within Expression only for the sake of ease of
+ * coding. Similarly, Expression has within it a nested Visitor interface and an abstract, generic accept()
+ * method that subclasses implement. This application of the Visitor pattern allows for the definition
+ * of complex methods specific to each Expression subclass in a single, separate class, Interpreter,
+ * which implements the Visitor interface.
+ * 
+ * Significance of each subclass' fields is elaborated upon in comments at the Parser and Interpreter classes
+ * that construct and evaluate these objects, respectively. 
+ * 
+ * */
+
 package syntactic_analysis;
 
 import java.util.List;
@@ -14,7 +27,7 @@ public abstract class Expression {
 		T visitAssignmentExpression(Assignment expression);
 		T visitBinaryExpression(Binary expression);
 		T visitCallExpression(Call expression);
-		T visitGroupingExpression(Grouping expression);
+		T visitCombinationExpression(Combination expression);
 		T visitIndexExpression(Index expression);
 		T visitLiteralExpression(Literal expression);
 		T visitLogicalExpression(Logical expression);
@@ -24,12 +37,12 @@ public abstract class Expression {
 	}
 
     public static class Allocation extends Expression {
-        public final Expression object;
+        public final Expression index;
         public final Token symbol;
         public final Expression value;
     	
-    	Allocation(Expression object, Token symbol, Expression value) {
-            this.object = object;
+    	Allocation(Expression index, Token symbol, Expression value) {
+            this.index = index;
             this.symbol = symbol;
             this.value = value;
         }
@@ -105,15 +118,15 @@ public abstract class Expression {
 
 	}
 
-	public static class Grouping extends Expression {
+	public static class Combination extends Expression {
 		public final Expression expression;
 
-		public Grouping(Expression expression) {
+		public Combination(Expression expression) {
 			this.expression = expression;
 		}
 
 		public <T> T accept(Visitor<T> visitor) {
-			return visitor.visitGroupingExpression(this);
+			return visitor.visitCombinationExpression(this);
 		}
 
 	}
