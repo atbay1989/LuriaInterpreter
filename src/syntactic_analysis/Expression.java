@@ -88,12 +88,12 @@ public abstract class Expression {
 	}
 	
 	public static class Call extends Expression {
-		public final Expression callee;
+		public final Expression called;
 		public final Token rightParenthesis;
 		public final List<Expression> arguments;
 
-		public Call(Expression callee, Token rightParenthesis, List<Expression> arguments) {
-			this.callee = callee;
+		public Call(Expression called, Token rightParenthesis, List<Expression> arguments) {
+			this.called = called;
 			this.rightParenthesis = rightParenthesis;
 			this.arguments = arguments;
 		}

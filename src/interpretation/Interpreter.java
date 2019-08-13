@@ -1,3 +1,15 @@
+/*
+ * The Function class implements the Callable interface method call(). Given a reference to the 'calling'
+ * Interpreter, the Function call() method instantiates a new MemoryEnvironment. This provides each called
+ * function in Luria with its own MemoryEnvironment within which the variables declared within the function
+ * block or parameters passed to a function are stored. Variables belonging to the function's outer blocks 
+ * remain accessible, but further functions called within a function block (i.e. recursively) become inaccessible.
+ * 
+ * Functions in Luria return null except when a ReturnStatement is encountered upon evaluation of the function
+ * block. See also comment at Return. 
+ * 
+ * */
+
 package interpretation;
 
 import static lexical_analysis.TokenType.*;
@@ -22,7 +34,7 @@ import syntactic_analysis.Expression.Logical;
 import syntactic_analysis.Expression.Unary;
 import syntactic_analysis.Expression.VariableExpression;
 import syntactic_analysis.Statement.Block;
-import syntactic_analysis.Statement.Function;
+import syntactic_analysis.Statement.FunctionDeclaration;
 import syntactic_analysis.Statement.If;
 import syntactic_analysis.Statement.Print;
 import syntactic_analysis.Statement.ReadBoolean;
@@ -34,8 +46,8 @@ import syntactic_analysis.Statement.While;
 
 public class Interpreter implements Expression.Visitor<Object>, Statement.Visitor<Void> {
 
-	public final MemoryEnvironment global = new MemoryEnvironment();
-	private MemoryEnvironment environment = global;
+	public final MemoryEnvironment globalScope = new MemoryEnvironment();
+	private MemoryEnvironment environment = globalScope;
 
 	public void interpret(List<Statement> statements) {
 		try {
@@ -200,7 +212,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		if (statement.initialisation != null) {
 			value = evaluate(statement.initialisation);
 		}
-		environment.lookup(statement.symbol.lexeme, value);
+		environment.store(statement.symbol.lexeme, value);
 		return null;
 	}
 
@@ -211,9 +223,9 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	}
 
 	@Override
-	public Void visitFunctionStatement(Function statement) {
+	public Void visitFunctionDeclarationStatement(FunctionDeclaration statement) {
 		interpretation.Function function = new interpretation.Function(statement);
-		environment.lookup(statement.symbol.lexeme, function);
+		environment.store(statement.symbol.lexeme, function);
 		return null;
 	}
 
@@ -254,7 +266,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
  *  */
 	@Override
 	public Object visitCallExpression(Call expression) {
-		Object called = evaluate(expression.callee);
+		Object called = evaluate(expression.called);
 		List<Object> arguments = new ArrayList<>();
 		for (Expression a : expression.arguments) {
 			arguments.add(evaluate(a));
@@ -302,13 +314,13 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	
 	@Override
 	public Object visitVariableExpression(VariableExpression expression) {
-		return environment.get(expression.symbol);
+		return environment.load(expression.symbol);
 	}
 
 	@Override
 	public Object visitAssignmentExpression(Assignment expression) {
 		Object value = evaluate(expression.value);
-		environment.store(expression.symbol, value);
+		environment.storeExisting(expression.symbol, value);
 		return value;
 	}
 	
@@ -325,7 +337,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		String input = s.nextLine();
 		Object value = evaluate(new Expression.Literal(input));
 		Token t = ((Expression.VariableExpression) statement.expression).symbol;
-		environment.store(t, value);
+		environment.storeExisting(t, value);
 		return null;
 	}
 
@@ -335,7 +347,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		double input = s.nextDouble();
 		Object value = evaluate(new Expression.Literal(input));
 		Token t = ((Expression.VariableExpression) statement.expression).symbol;
-		environment.store(t, value);
+		environment.storeExisting(t, value);
 		return null;
 	}
 
@@ -347,11 +359,11 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 			String input = s.nextLine();
 			if (input.equals("true")) {
 				Object value = evaluate(new Expression.Literal(input));
-				environment.store(t, value);
+				environment.storeExisting(t, value);
 				break;
 			} else if (input.equals("false")) {
 				Object value = evaluate(new Expression.Literal(input));
-				environment.store(t, value);
+				environment.storeExisting(t, value);
 				break;
 			} else {
 				throw new InterpreterError(t, "Boolean value expected.");

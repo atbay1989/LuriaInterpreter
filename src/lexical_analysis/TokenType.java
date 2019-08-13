@@ -1,7 +1,15 @@
+/*
+ * TokenType is the site of the set of constants that signify the type of a Token. For those classes that require
+ * reference to these types, namely the Lexer, Parser and LuriaInterpreter classes, a static import of TokenType
+ * is made, allowing the constants use without specifying the TokenType container (enum) class. This is for the
+ * purpose of improving code readability.
+ * 
+ * */
+
 package lexical_analysis;
 
 public enum TokenType {
-/*	One character tokens.*/
+/*	One char tokens.*/
 	ASTERISK,
 	COMMA,
 	EXPONENT,
@@ -18,7 +26,7 @@ public enum TokenType {
 	RIGHT_PARENTHESIS,
 	SEMI_COLON,
 	
-/*	One or many character tokens.*/
+/*	One or many char tokens.*/
 	EQUAL,
 	EQUAL_EQUAL,
 	EXCLAMATION,
@@ -33,7 +41,7 @@ public enum TokenType {
 	SIGNIFIER,
 	STRING,
 	
-/*	Reserved word tokens.*/
+/*	ReservedSequence tokens.*/
 	AND,
 	ELSE,
 	FALSE,
