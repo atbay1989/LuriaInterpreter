@@ -34,7 +34,7 @@ public class LuriaInterpreter {
 	 */
 	public static void main(String[] args) throws IOException {
 
-		readFile("src\\testsuite\\euclidean.txt");
+		readFile("src\\testsuite\\operatorPrecedenceTest.txt");
 
 		/*
 		 * if (args.length > 1) { System.exit(1); } else if (args.length == 1) {

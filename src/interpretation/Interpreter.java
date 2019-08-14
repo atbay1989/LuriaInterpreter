@@ -1,12 +1,6 @@
 /*
- * The Function class implements the Callable interface method call(). Given a reference to the 'calling'
- * Interpreter, the Function call() method instantiates a new MemoryEnvironment. This provides each called
- * function in Luria with its own MemoryEnvironment within which the variables declared within the function
- * block or parameters passed to a function are stored. Variables belonging to the function's outer blocks 
- * remain accessible, but further functions called within a function block (i.e. recursively) become inaccessible.
- * 
- * Functions in Luria return null except when a ReturnStatement is encountered upon evaluation of the function
- * block. See also comment at Return. 
+ * The Interpreter class implements the Expression and Statement interfaces and therefore defines all methods
+ * for interpreting nodes in the syntax tree. Interpreter is a tree-walk 
  * 
  * */
 
@@ -261,9 +255,11 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		return null;
 	}
 
-/*  visitCallExpression() upon call of the Function class' call() method, to which is passed a reference to the current
- *  MemoryEnvironment and the list of arguments (i.e. parameters) associated with the function...
- *  */
+	/*
+	 * visitCallExpression() upon call of the Function class' call() method, to
+	 * which is passed a reference to the current MemoryEnvironment and the list of
+	 * arguments (i.e. parameters) associated with the function...
+	 */
 	@Override
 	public Object visitCallExpression(Call expression) {
 		Object called = evaluate(expression.called);
@@ -285,33 +281,33 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 
 	@Override
 	public Object visitArrayExpression(Array expression) {
-        List<Object> components = new ArrayList<>();
-        if (expression.components != null) {
-            for (Expression component : expression.components) {
-            	components.add(evaluate(component));
-            }
-        }
-        return components;
+		List<Object> components = new ArrayList<>();
+		if (expression.components != null) {
+			for (Expression component : expression.components) {
+				components.add(evaluate(component));
+			}
+		}
+		return components;
 	}
 
 	@Override
 	public Object visitIndexExpression(Index expression) {
-        Object object = evaluate(expression.object);
-        if (!(object instanceof List)) {
-            throw new InterpreterError(expression.symbol, "Error: array expected.");
-        }
-        List array = (List)object;
-        Object objectIndex = evaluate(expression.index);
-        if (!(objectIndex instanceof Double)) {
-            throw new InterpreterError(expression.symbol, "Error: integer expected.");
-        }
-        int index = ((Double) objectIndex).intValue();
-        if (index >= array.size()) {
-            throw new InterpreterError(expression.symbol, "Error: index is beyond array range.");
-        }
-        return array.get(index);
+		Object object = evaluate(expression.object);
+		if (!(object instanceof List)) {
+			throw new InterpreterError(expression.symbol, "Error: array expected.");
+		}
+		List array = (List) object;
+		Object objectIndex = evaluate(expression.index);
+		if (!(objectIndex instanceof Double)) {
+			throw new InterpreterError(expression.symbol, "Error: integer expected.");
+		}
+		int index = ((Double) objectIndex).intValue();
+		if (index >= array.size()) {
+			throw new InterpreterError(expression.symbol, "Error: index is beyond array range.");
+		}
+		return array.get(index);
 	}
-	
+
 	@Override
 	public Object visitVariableExpression(VariableExpression expression) {
 		return environment.load(expression.symbol);
@@ -323,7 +319,7 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 		environment.storeExisting(expression.symbol, value);
 		return value;
 	}
-	
+
 	@Override
 	public Void visitPrintStatement(Print statement) {
 		Object value = evaluate(statement.expression);
@@ -376,25 +372,25 @@ public class Interpreter implements Expression.Visitor<Object>, Statement.Visito
 	@Override
 	public Object visitAllocationExpression(Allocation expression) {
 		Expression.Index subscript = null;
-        if (expression.index instanceof Expression.Index) {
-            subscript = (Expression.Index) expression.index;
-        }
-        Object listObject = evaluate(subscript.object);
-        if (!(listObject instanceof List)) {
-            throw new InterpreterError(expression.symbol, "");
-        }
-        List<Object> list = (List) listObject;
-        Object indexObject = evaluate(subscript.index);
-        if (!(indexObject instanceof Double)) {
-            throw new InterpreterError(expression.symbol, "Expected expression for array index.");
-        }
-        int index = ((Double) indexObject).intValue();
-        if (index >= list.size()) {
-            throw new InterpreterError(expression.symbol, "Array index out of range.");
-        }
-        Object value = evaluate(expression.value);
-        list.set(index, value);
-        return value;
+		if (expression.index instanceof Expression.Index) {
+			subscript = (Expression.Index) expression.index;
+		}
+		Object listObject = evaluate(subscript.object);
+		if (!(listObject instanceof List)) {
+			throw new InterpreterError(expression.symbol, "");
+		}
+		List<Object> list = (List) listObject;
+		Object indexObject = evaluate(subscript.index);
+		if (!(indexObject instanceof Double)) {
+			throw new InterpreterError(expression.symbol, "Expected expression for array index.");
+		}
+		int index = ((Double) indexObject).intValue();
+		if (index >= list.size()) {
+			throw new InterpreterError(expression.symbol, "Array index out of range.");
+		}
+		Object value = evaluate(expression.value);
+		list.set(index, value);
+		return value;
 	}
 
 }
