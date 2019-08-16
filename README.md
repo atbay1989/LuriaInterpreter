@@ -4,7 +4,7 @@ ProjectLuria is an implementation of an interpreter in Java for a simple, impera
 ---
 
 ## Luria
-Luria is a simple, imperative high-level language. It's syntax is C-like, with the exception that it is dynamically typed and (as of yet) cannot read and interpret user input, among other functionalities.
+Luria is a simple, imperative high-level language.
 
 NB: Like C, a single-line character sequence prefixed with **//** is interpreted as a comment:
 
