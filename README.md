@@ -2,7 +2,6 @@
 ProjectLuria is an implementation of an interpreter in Java for a simple, imperative high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
 
 ---
-
 ## Luria
 Luria is a simple, imperative high-level language.
 
@@ -23,11 +22,11 @@ Here is an example of Luria syntax, demonstrating some of its features:
     }
 
 ---
-
 ### Data Types & Variables
-Variables, declared using the "variable" keyword, can represent a number (e.g. **1**, **1.0**, **-1**), a string (e.g. **"0"**, **"hello"**, **"0world"**), a boolean (i.e. **true**, **false**), or **null**, a value representing the absence of a value. When declared with no value assigned, a variable defaults to **null**. Luria is therefore is *dynamically typed*.
+#### Data Types & Variables
+Variables, declared using the "variable" keyword, can represent a number (e.g. **1**, **1.0**, **-1**), a string (e.g. **"0"**, **"hello"**, **"0world"**), a boolean (i.e. **true**, **false**), an array (e.g. **[0,1,2]**, **["a","b","c"]**) or **null**, a value representing the absence of a value. When declared with no value assigned, a variable defaults to **null**. Luria is therefore is *dynamically typed*.
 
-Numbers are handled by the interpreter as Java doubles; numbers ending **".0"** are truncated upon their printing, e.g. **"1.0"** becomes **"1"**.
+Numbers are handled by the interpreter as Java doubles; numbers ending **".0"** are truncated upon their printing, e.g. **"1.0"** becomes **"1"**, except when printing an array, in which case they remain presented as doubles.
 
 In valid Luria syntax variables can be declared and reassigned as follows:
 
@@ -44,8 +43,17 @@ Variables declared can be operated upon as their assigned value and can also be 
     variable x = 0
     x = x + 1; // 1
 
----
+#### Arrays
+Arrays in Luria are also *dynamic* and can be assigned any combination of data types. They are indexed from 0 and the valued stored can be accessed, assigned and reassigned. Luria supports *multidimentional* arrays. At present, an array is of fixed length and when declared a value must be given at each index. Examples of Luria array syntax are:
 
+    variable a = [0,0,3,0,0];
+    variable b = ["a", 1, true, null, empty, [0,1]];
+    b[0]; // a
+    b[1] - 1 // 0
+    b[3] = "full" // full
+    b[4][2]; // 3
+    
+---
 ### Statements & Expressions
 #### Statements
 Statements are syntactic units that express a command to carry out an action. Like many C-family languages, every statement in Luria must end with a semi-colon, **;**, else an error is thrown at runtime. Luria supports the following example statements:
@@ -81,6 +89,22 @@ Statements are syntactic units that express a command to carry out an action. Li
     readboolean x // a readboolean statement, interrupting the program to await user input
     // of a boolean value
     
+##### Read Statements
+Because Luria is *dynamically typed*, provided are three means of accepting user input, each for assigning a new value to either a number, boolean or string variable. Read statements block interpretation of the program until a user inputs a value, for example;
+
+    variable aString = "sad";
+    variable aNumber = 1;
+    variable aBoolean = false;
+    read aString;
+    // happy
+    // aString = happy;
+    read aNumber;
+    // 10 
+    // aNumber = 10;
+    read aBoolean;
+    // true
+    // aBoolean = true
+
 #### Arithmetic Expressions
 ##### Binary Operations
 Luria supplies the elementary arithmetic operators addition, subtraction, multiplication, and division. Modulo and exponent are also supported. These binary operators are expressed in *infix* notation. 
@@ -116,7 +140,7 @@ The exclamation mark symbol (**!**) negates a truth value:
     !x // false
     !(1 != 1) // true
 
-#### Precedence
+##### Precedence
 The conventional order of operations is followed, whereby multiplication and division precede addition and subtraction. Thus:
 
     12 / 3 * 4 - 1; // 15, i.e. ((12 / 3) * 4) - 1
@@ -127,7 +151,6 @@ Luria also permits the combination of expressions using parentheses:
     12 / (6 - 2); // 3
 
 ---
-
 ### Comparison & Equality Operations
 Boolean logic is supported in Luria. **true** and **false** values can be assigned to variables. Boolean values can also be derived from comparison operations:
 
@@ -190,7 +213,6 @@ Looping is achieved using **while**. Like **if**, **while** requires a condition
     } // returns numbers 1 to 10 each on a new line
 
 ---
-
 ### Functions
 Functions are declared in Luria using the keyword **function** followed by a function signifier, its parameter(s) expressed as variable signfier(s) in parentheses, followed by the function block. For example: 
 
@@ -223,19 +245,3 @@ In this way, functions can evaluate to a value and can therefore be passed as ar
     print areaOfACircle(square(3)); // 28.2743338815
     
 ---
-### Read Statements
-Because Luria is *dynamically typed*, provided are three means of accepting user input, each for assigning a new value to either a number, boolean or string variable. Read statements block interpretation of the program until a user inputs a value, for example;
-
-    variable aString = "sad";
-    variable aNumber = 1;
-    variable aBoolean = false;
-    read aString;
-    // happy
-    // aString = happy;
-    read aNumber;
-    // 10 
-    // aNumber = 10;
-    read aBoolean;
-    // true
-    // aBoolean = true
-
