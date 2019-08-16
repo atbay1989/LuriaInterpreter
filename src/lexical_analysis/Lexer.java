@@ -20,12 +20,12 @@ import java.util.Map;
 import luria_interpreter.LuriaInterpreter;
 
 public class Lexer {
-	private final String sourceCode;
-	private final List<Token> tokens = new ArrayList<>();
-	private int start = 0;
-	private int current = 0;
-	private int location = 1;
-	private static final Map<String, TokenType> reservedSequence;
+	 final String sourceCode;
+	 final List<Token> tokens = new ArrayList<>();
+	 int start = 0;
+	 int current = 0;
+	 int location = 1;
+	 static final Map<String, TokenType> reservedSequence;
 
 	static {
 		reservedSequence = new HashMap<>();
@@ -55,7 +55,7 @@ public class Lexer {
 	 * process() increments the current counter and returns the next char to lex,
 	 * i.e. it 'consumes' the current char.
 	 */
-	private char process() {
+	 char process() {
 		current++;
 		return sourceCode.charAt(current - 1);
 	}
@@ -64,21 +64,21 @@ public class Lexer {
 	 * alphabeticChar() checks whether a char is alphabetic, including upper and
 	 * lower cases and '_'.
 	 */
-	private boolean alphabeticChar(char c) {
+	 boolean alphabeticChar(char c) {
 		return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
 	}
 
 	/*
 	 * numericChar() checks whether a char is numeric, '0' to '9'.
 	 */
-	private boolean numericChar(char c) {
+	 boolean numericChar(char c) {
 		return c >= '0' && c <= '9';
 	}
 
 	/*
 	 * alphanumericChar() checks whether a char is either alphabetic or numeric.
 	 */
-	private boolean alphanumericChar(char c) {
+	 boolean alphanumericChar(char c) {
 		return alphabeticChar(c) || numericChar(c);
 	}
 
@@ -87,7 +87,7 @@ public class Lexer {
 	 * This method provides a null value to Tokens that do not have values that may
 	 * be operated upon (non-terminal), i.e. a number or string value.
 	 */
-	private void addToken(TokenType type) {
+	 void addToken(TokenType type) {
 		addToken(type, null);
 	}
 
@@ -97,7 +97,7 @@ public class Lexer {
 	 * lexeme, or the string associated with the Token produced, (e.g. ';',
 	 * 'hello'), and d.) the location, i.e. line count.
 	 */
-	private void addToken(TokenType type, Object literal) {
+	 void addToken(TokenType type, Object literal) {
 		String lexeme = sourceCode.substring(start, current);
 		tokens.add(new Token(type, lexeme, literal, location));
 	}
@@ -110,7 +110,7 @@ public class Lexer {
 	 * construct a EQUAL_EQUAL Token, representing equality, else it constructs an
 	 * EQUAL Token, representing assignment.
 	 */
-	private boolean match(char c) {
+	 boolean match(char c) {
 		if (end()) {
 			return false;
 		}
@@ -126,7 +126,7 @@ public class Lexer {
 	 * enables the parser, for example, to conditionally process a sequence of
 	 * unknown length, such as lexing a string.
 	 */
-	private char lookahead() {
+	 char lookahead() {
 		if (end()) {
 			return '\0';
 		}
@@ -138,7 +138,7 @@ public class Lexer {
 	 * point when lexing floating point numbers to confirm a number is well-formed,
 	 * e.g. '1.0', not '1.a'.
 	 */
-	private char doubleLookahead() {
+	 char doubleLookahead() {
 		if (current + 1 >= sourceCode.length()) {
 			return '\0';
 		}
@@ -148,7 +148,7 @@ public class Lexer {
 	/*
 	 * end() checks whether the lexer has reached the end of the source code string.
 	 */
-	private boolean end() {
+	 boolean end() {
 		return current >= sourceCode.length();
 	}
 
@@ -170,7 +170,7 @@ public class Lexer {
 	 * to conditionally decide, at its position in the source code, what Token to
 	 * construct.
 	 */
-	private void lexToken() {
+	 void lexToken() {
 		char c = process();
 		switch (c) {
 		// Single char tokens.
@@ -267,7 +267,7 @@ public class Lexer {
 	 * char. It checks for floating points and parses the numeric string as a Java
 	 * double.
 	 */
-	private void lexNumber() {
+	 void lexNumber() {
 		while (numericChar(lookahead())) {
 			process();
 		}
@@ -282,10 +282,10 @@ public class Lexer {
 
 	/*
 	 * lexString() lexes a string of unknown length upon encountering a
-	 * '"' char. If a new line char is found, location is incremented, if a closing '"'
-	 * is not encountered before the end of the source code, an error is given.
+	 * '"' char. If a new line char is found, location is incremented, if a closing '"
+	 * ' is not encountered before the end of the source code, an error is given.
 	 */
-	private void lexString() {
+	 void lexString() {
 		while (lookahead() != '"' && !end()) {
 			if (lookahead() == '\n')
 				location++;
@@ -305,7 +305,7 @@ public class Lexer {
 	 * against the reserved sequences. If no type (null) is returned, it adds a
 	 * Token of type SIGNIFIER.
 	 */
-	private void lexSignifier() {
+	 void lexSignifier() {
 		while (alphanumericChar(lookahead())) {
 			process();
 		}

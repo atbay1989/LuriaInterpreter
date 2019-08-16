@@ -1,11 +1,11 @@
 /*
- * The Parser class is a recursive descent parser. In its fields are the list of Token objects constructed in-order by the 
- * lexer, 'tokens', representing the parser's input, and a counter, 'current', that orients the parser as it parses the
- * Token object sequence. Available to the parser are a methods for useful actions such as a parser lookahead. These provide
- * the infrastructure necessary for it to carry out the process of constructing and nesting the syntax tree nodes, which are
- * either of type Statement or Expression. The output of the parser is a list of Statement objects, 'statements', which is
- * declared at and returned from the parse() method. The order of recursive method calls in the parser mirrors the production
- * rules of the Luria context-free grammar.
+ * The Parser class is an implementation of a recursive descent parser. In its fields are the list of Token objects
+ * constructed in-order by the lexer, 'tokens', representing the parser's input, and a counter, 'current', that orients
+ * the parser as it parses the Token object sequence. Available to the parser are a methods for useful actions such as a
+ * parser lookahead. These provide the infrastructure necessary for it to carry out the process of constructing and nesting
+ * the syntax tree nodes, which are either of type Statement or Expression. The output of the parser is a list of Statement
+ * objects, 'statements', which is declared at and returned from the parse() method. The order of recursive method calls in
+ * the parser mirrors the production rules of the Luria context-free grammar.
  * 
  * */
 
@@ -362,7 +362,10 @@ public class Parser {
 	}
 
 	/*
-	 * assignment() recursively calls or().
+	 * assignment() recursively calls or(). If an expression is found to be a
+	 * variable an 'assignment' node is constructed, given the variable symbol and
+	 * assigned value. If an expression is found to be an array index an
+	 * 'allocation' node is constructed, given 
 	 */
 	private Expression assignment() {
 		Expression e = or();
@@ -494,7 +497,7 @@ public class Parser {
 
 	/*
 	 * call() constructs a 'function call' node, composed of the function SIGNIFIER
-	 * token and its arguments. Else, it an 'array index' node.
+	 * token and its arguments. Else, it constructs an 'array index' node.
 	 */
 	private Expression call() {
 		Expression e = literal();
