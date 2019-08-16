@@ -33,13 +33,13 @@ public class LuriaInterpreter {
 	 * else the program enters the prompt state.
 	 */
 	public static void main(String[] args) throws IOException {
-
-		readFile("src\\testsuite\\operatorPrecedenceTest.txt");
-
-		/*
-		 * if (args.length > 1) { System.exit(1); } else if (args.length == 1) {
-		 * readFile(args[0]); } else { runPrompt(); }
-		 */
+		if (args.length > 1) {
+			System.exit(1);
+		} else if (args.length == 1) {
+			readFile(args[0]);
+		} else {
+			runPrompt();
+		}
 	}
 
 	/*

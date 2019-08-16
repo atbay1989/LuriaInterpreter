@@ -18,14 +18,16 @@ import syntactic_analysis.Statement;
 
 public class Function implements Callable {
 	private final Statement.FunctionDeclaration declaration;
+	private final MemoryEnvironment closure;
 
-	public Function(Statement.FunctionDeclaration declaration) {
+	public Function(Statement.FunctionDeclaration declaration, MemoryEnvironment closure) {
 		this.declaration = declaration;
+		this.closure = closure; 
 	}
 
 	@Override
 	public Object call(Interpreter interpreter, List<Object> arguments) {
-		MemoryEnvironment functionEnvironment = new MemoryEnvironment(interpreter.globalScope);
+		MemoryEnvironment functionEnvironment = new MemoryEnvironment(closure);
 		for (int i = 0; i < declaration.arguments.size(); i++) {
 			functionEnvironment.store(declaration.arguments.get(i).lexeme, arguments.get(i));
 		}
@@ -41,6 +43,11 @@ public class Function implements Callable {
 	@Override
 	public String toString() {
 		return "<function " + declaration.symbol.lexeme + "";
+	}
+
+	@Override
+	public int arity() {
+		return declaration.arguments.size();
 	}
 
 }
