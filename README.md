@@ -6,7 +6,7 @@ ProjectLuria is an implementation of an interpreter in Java for a simple, impera
 ## Luria
 Luria is a simple, imperative high-level language.
 
-NB: Like C, a single-line character sequence prefixed with **//** is interpreted as a comment:
+Like C, a single-line character sequence prefixed with **//** is interpreted as a comment:
 
     // this is a comment in Luria
 
