@@ -95,13 +95,13 @@ Because Luria is *dynamically typed*, provided are three means of accepting user
     variable aString = "sad";
     variable aNumber = 1;
     variable aBoolean = false;
-    read aString;
+    readstring aString;
     // happy
     // aString = happy;
-    read aNumber;
+    readnumber aNumber;
     // 10 
     // aNumber = 10;
-    read aBoolean;
+    readboolean aBoolean;
     // true
     // aBoolean = true
 
