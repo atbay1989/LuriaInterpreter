@@ -1,5 +1,5 @@
 # luria-interpreter
-luria-interpreter is an implementation of an interpreter in Java for a simple, imperative high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
+This is an implementation of an interpreter in Java for a simple, imperative high-level-language named Luria. This is part of a development project to fulfil the requirements of an MSc in Software Development at the University of Glasgow.
 
 ---
 ## Luria
